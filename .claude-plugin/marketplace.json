@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "product-design-assistant-marketplace",
+  "description": "Self-hosted marketplace for the Product Design Assistant plugin.",
+  "owner": {
+    "name": "authorpm"
+  },
+  "plugins": [
+    {
+      "name": "product-design-assistant",
+      "description": "Turns a PM's plain-language product description into a working, code-integrated design starter kit (colors, typography, spacing, components, layout) — no design vocabulary required.",
+      "source": "./",
+      "category": "design"
+    }
+  ]
+}

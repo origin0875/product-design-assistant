@@ -1,0 +1,8 @@
+{
+  "name": "product-design-assistant",
+  "description": "Turns a PM's plain-language product description into a working, code-integrated design starter kit (colors, typography, spacing, components, layout) — no design vocabulary required.",
+  "version": "0.1.0",
+  "author": {
+    "name": "authorpm"
+  }
+}

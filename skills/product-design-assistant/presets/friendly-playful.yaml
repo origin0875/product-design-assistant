@@ -1,0 +1,96 @@
+# Style Preset: Friendly / Playful
+# PM-facing label: "親和活潑"
+
+name: friendly-playful
+label_for_pm: "親和活潑"
+use_case: ["消費型 App", "社群 / 社交產品", "生活風格 App", "面向一般大眾的服務"]
+keywords: [friendly, playful, warm, approachable, energetic]
+
+principle:
+  design_keywords: ["親和", "活潑", "溫暖", "有溫度"]
+  ux_principles:
+    - "互動要給即時、討喜的回饋（完成動作要有肯定感），但不能拖慢操作"
+    - "文案語氣口語化，元件視覺上呼應這個語氣（圓潤、不生硬）"
+    - "空狀態/錯誤狀態用友善插圖與語氣化解挫折感，不要只是冷冰冰的文字"
+    - "首要任務按鈕要顯眼、好按，降低使用門檻優先於資訊密度"
+
+color:
+  primary:
+    hue_range: [15, 45]        # warm orange/coral default, brand color still overridable
+    default_hex: "#FF6B4A"
+  secondary:
+    relation: "complementary of primary, softened"
+    default_hex: "#3AB795"
+  neutral_scale: warm-gray
+  semantic:
+    success: "#2FAE66"
+    warning: "#E2A33D"
+    error: "#E5484D"
+    info: "#4C9AFF"
+  contrast_target: AA
+
+typography:
+  scale_ratio: 1.250          # major third — livelier jump between levels
+  base_size_px: 16
+  weight:
+    display: 800
+    h1: 700
+    h2: 700
+    h3: 600
+    body: 400
+    caption: 400
+    button: 700
+    label: 500
+  letter_spacing_bias: normal
+  numeric_typography: optional
+
+spacing:
+  base_unit: 8
+  scale: [4, 8, 12, 16, 24, 32, 40, 48]
+  density: spacious
+
+radius:
+  scale_px: { sm: 8, md: 12, lg: 20, full: 999 }
+  button: full            # pill buttons — signature of this preset
+  card: lg
+  input: md
+  dialog: lg
+  bottom_sheet: lg
+
+elevation:
+  style: pronounced
+  levels: [0, 1, 2, 3]
+  shadow_opacity_range: [0.08, 0.24]
+  notes: "卡片用明顯陰影營造漂浮/可觸摸感，呼應活潑調性"
+
+icon:
+  style: filled
+  stroke_width: 2
+  grid_px: 24
+
+component_bias:
+  button_default_variant: solid-flat
+  secondary_button_style: tonal
+  card_elevation_default: 1
+  density: spacious
+
+layout:
+  page_padding: 20
+  section_spacing: 28
+  card_spacing: 16
+  content_width_max_px: 960
+  nav_structure_bias: "web: 頂部+底部混合; mobile: 底部導航為主"
+
+extensions:
+  finance:
+    trigger_keywords: ["股票", "金融", "投資", "交易", "market", "stock", "trading", "finance"]
+    color:
+      up: "#2FAE66"
+      down: "#E5484D"
+      chart_line: "#FF6B4A"
+      chart_grid: "neutral-200"
+      risk_high: "#E5484D"
+      risk_medium: "#E2A33D"
+      risk_low: "#2FAE66"
+    typography:
+      numeric_typography: required

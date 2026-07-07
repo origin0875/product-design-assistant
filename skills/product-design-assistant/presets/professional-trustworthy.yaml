@@ -1,0 +1,98 @@
+# Style Preset: Professional / Trustworthy
+# PM-facing label: "專業穩重"
+# Calibrated once here — do not let the model improvise these structural values at runtime.
+# Only color.primary.default_hex may be swapped for a brand color (see preset-blender.md).
+
+name: professional-trustworthy
+label_for_pm: "專業穩重"
+use_case: ["B2B 後台", "金融 / 投資工具", "企業內部系統", "專業工具型 App"]
+keywords: [professional, trustworthy, stable, credible, serious]
+
+principle:
+  design_keywords: ["穩重", "專業", "可信賴", "清晰"]
+  ux_principles:
+    - "資訊層級清楚優先於視覺裝飾，數據本身就是主角"
+    - "操作路徑可預期，避免會嚇到使用者的驚喜互動或動畫"
+    - "破壞性操作一律二次確認，金融/後台場景不能有僥倖空間"
+    - "留白服務於掃描效率，不是用來營造情緒"
+
+color:
+  primary:
+    hue_range: [205, 225]
+    default_hex: "#1F5FBF"
+  secondary:
+    relation: "primary hue + 30, lower saturation"
+    default_hex: "#5B7A9E"
+  neutral_scale: cool-gray
+  semantic:
+    success: "#1F9254"
+    warning: "#B7791F"
+    error: "#C53030"
+    info: "#2B6CB0"
+  contrast_target: AA
+
+typography:
+  scale_ratio: 1.200          # minor third — steady, not dramatic
+  base_size_px: 16
+  weight:
+    display: 700
+    h1: 700
+    h2: 600
+    h3: 600
+    body: 400
+    caption: 400
+    button: 600
+    label: 500
+  letter_spacing_bias: tight
+  numeric_typography: optional   # becomes "required" if finance extension triggers
+
+spacing:
+  base_unit: 8
+  scale: [4, 8, 12, 16, 24, 32, 40, 48]
+  density: comfortable
+
+radius:
+  scale_px: { sm: 4, md: 6, lg: 12, full: 999 }
+  button: md
+  card: sm
+  input: sm
+  dialog: md
+  bottom_sheet: lg
+
+elevation:
+  style: subtle
+  levels: [0, 1, 2, 3]
+  shadow_opacity_range: [0.04, 0.16]
+  notes: "傾向用 1px border 取代陰影做卡片分隔，陰影只用在真正浮起的層（dropdown/modal）"
+
+icon:
+  style: outline
+  stroke_width: 1.5
+  grid_px: 24
+
+component_bias:
+  button_default_variant: solid-flat
+  secondary_button_style: outline
+  card_elevation_default: 0    # border-based, not shadow-based
+  density: comfortable
+
+layout:
+  page_padding: 16
+  section_spacing: 32
+  card_spacing: 12
+  content_width_max_px: 1120
+  nav_structure_bias: "web: 側邊欄導航; mobile: 底部導航"
+
+extensions:
+  finance:
+    trigger_keywords: ["股票", "金融", "投資", "交易", "market", "stock", "trading", "finance", "投資組合", "資產"]
+    color:
+      up: "#1F9254"
+      down: "#C53030"
+      chart_line: "#2B6CB0"
+      chart_grid: "neutral-200"
+      risk_high: "#C53030"
+      risk_medium: "#B7791F"
+      risk_low: "#1F9254"
+    typography:
+      numeric_typography: required

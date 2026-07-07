@@ -1,0 +1,96 @@
+# Style Preset: Minimal / Elegant
+# PM-facing label: "簡約優雅"
+
+name: minimal-elegant
+label_for_pm: "簡約優雅"
+use_case: ["內容型 App", "生活風格 / 美學導向產品", "高單價/精品服務", "閱讀型產品"]
+keywords: [minimal, elegant, refined, quiet, premium]
+
+principle:
+  design_keywords: ["簡約", "優雅", "留白", "質感"]
+  ux_principles:
+    - "留白本身就是設計語言，不用邊框/陰影堆砌層次，靠間距與對齊建立層級"
+    - "每個畫面只保留必要元素，非核心功能收進次層級，不平舖所有選項"
+    - "色彩克制，用單一強調色而非多色系統來標示重點"
+    - "動效緩慢而細緻，避免任何跳動感或高飽和瞬間變化"
+
+color:
+  primary:
+    hue_range: [0, 0]          # near-neutral/monochrome default; brand color override still applies
+    default_hex: "#1A1A1A"
+  secondary:
+    relation: "single accent hue, low saturation, used sparingly"
+    default_hex: "#A68A64"
+  neutral_scale: pure-gray
+  semantic:
+    success: "#3A7D5C"
+    warning: "#A6822F"
+    error: "#A6392F"
+    info: "#4A6E8A"
+  contrast_target: AA
+
+typography:
+  scale_ratio: 1.333          # perfect fourth — dramatic, editorial hierarchy
+  base_size_px: 16
+  weight:
+    display: 500
+    h1: 500
+    h2: 500
+    h3: 500
+    body: 400
+    caption: 400
+    button: 500
+    label: 500
+  letter_spacing_bias: wide
+  numeric_typography: optional
+
+spacing:
+  base_unit: 8
+  scale: [4, 8, 12, 16, 24, 32, 48, 64]
+  density: spacious
+
+radius:
+  scale_px: { sm: 0, md: 2, lg: 4, full: 999 }
+  button: sm
+  card: sm
+  input: sm
+  dialog: md
+  bottom_sheet: md
+
+elevation:
+  style: flat
+  levels: [0, 1, 2, 3]
+  shadow_opacity_range: [0.02, 0.08]
+  notes: "幾乎不用陰影；分隔靠留白與極細 1px 分隔線（divider），而非 elevation"
+
+icon:
+  style: outline
+  stroke_width: 1
+  grid_px: 24
+
+component_bias:
+  button_default_variant: outline
+  secondary_button_style: text-only
+  card_elevation_default: 0
+  density: spacious
+
+layout:
+  page_padding: 24
+  section_spacing: 48
+  card_spacing: 24
+  content_width_max_px: 840
+  nav_structure_bias: "web: 極簡頂部列; mobile: 底部導航，圖示克制不用色塊"
+
+extensions:
+  finance:
+    trigger_keywords: ["股票", "金融", "投資", "交易", "market", "stock", "trading", "finance"]
+    color:
+      up: "#3A7D5C"
+      down: "#A6392F"
+      chart_line: "#A68A64"
+      chart_grid: "neutral-200"
+      risk_high: "#A6392F"
+      risk_medium: "#A6822F"
+      risk_low: "#3A7D5C"
+    typography:
+      numeric_typography: required
