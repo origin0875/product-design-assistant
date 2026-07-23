@@ -21,9 +21,11 @@ export const colors = {
   // + up/down/chart/risk if finance extension active
 } as const;
 
+// fontSize values come straight from manifest.typography.scale_px (platform-resolved in
+// preset-blender.md Step 4b) — do NOT recompute from scale_ratio in the adapter.
 export const typography = {
-  display: { fontSize: N, fontWeight: '{weight.display}', letterSpacing: N },
-  h1: { fontSize: N, fontWeight: '{weight.h1}' },
+  display: { fontSize: {scale_px.display}, fontWeight: '{weight.display}', letterSpacing: N },
+  h1: { fontSize: {scale_px.h1}, fontWeight: '{weight.h1}' },
   // h2, h3, body, caption, button, label ...
   // numericCurrentPrice / numericPercentage / numericMarketData if finance extension active
   //   each includes fontVariant: ['tabular-nums'] — RN's equivalent of CSS tabular-nums

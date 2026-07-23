@@ -45,6 +45,57 @@ If `intake_answers.density_override` differs from `preset.component_bias.density
 override `spacing.density` and adjust the spacing scale multiplier accordingly (dense →
 tighten the scale ~15%, sparse → loosen ~15%; standard → use preset default unchanged).
 
+## Step 4b — Resolve the type scale (platform-aware)
+
+The preset's `scale_ratio` is calibrated for an **editorial / web** reading width. Applied
+verbatim to a phone (~390pt wide), a dramatic ratio like minimal-elegant's 1.333 pushes the
+top of the scale to sizes that read as "obviously too big" (e.g. a 67px hero number, a 50px
+screen title). So the ratio must be resolved against the target platform, not copied raw.
+
+**1. Pick the effective ratio.**
+
+- If `intake_answers.platforms` contains **only** `web` → `effective_ratio = preset.scale_ratio` (unchanged).
+- If it contains **any** mobile platform (`ios` / `android`) → this is a mobile-first build
+  (one React Native codebase ships both), so **`effective_ratio = min(preset.scale_ratio, 1.25)`**.
+  This keeps friendly-playful (1.25) and professional (1.20) intact, and only tames the most
+  aggressive editorial ratio (minimal-elegant 1.333 → 1.25) where it actually hurts on a phone.
+
+**2. Derive every level as a *consecutive* power of the effective ratio** — no gaps. A gap in
+the scale is what forces engineers to hand-pick an off-scale size, which is exactly the
+inconsistency this Skill exists to prevent:
+
+| Token   | Formula                        |
+|---------|--------------------------------|
+| caption | `round(base / ratio)`   (^-1)  |
+| body    | `base`                   (^0)  |
+| button  | `base`                   (^0)  |
+| label   | `round(base / ratio)`   (^-1)  |
+| h3      | `round(base * ratio^1)`        |
+| h2      | `round(base * ratio^2)`        |
+| h1      | `round(base * ratio^3)`        |
+| display | `round(base * ratio^4)`        |
+
+The **only** intentionally non-consecutive size is the finance hero number below — every
+general text level is a neighbour of the next, so there is never a "nothing fits here" hole.
+
+**3. Cap the extremes on mobile** (safety net on top of the ratio cap):
+
+- `display` (mobile) = `min(display, 40)`
+- `numeric_current_price_detail` (mobile) = `min(round(base * ratio^5), 52)`
+
+On web, no cap — editorial hierarchy is the point there.
+
+**4. Numeric typography (finance), if active** — resolved from the *same* effective ratio so
+mobile and web stay internally consistent:
+
+- `numeric_current_price_inline` = the resolved **h1** size
+- `numeric_current_price_detail` = `base * ratio^5`, then mobile-capped per step 3
+- `numeric_market_data` = the resolved **body** size, tabular
+
+Write the fully-resolved pixel values into `typography.scale_px` in the manifest (see Step 7).
+Adapters must read those resolved values verbatim — they never recompute from the ratio, so
+the platform decision made here is the single place it lives.
+
 ## Step 5 — Resolve platform + component structure
 
 - Pull the canonical component list/variants/states from `modules/component-structure.md`
@@ -75,7 +126,13 @@ Write to `.design/design-manifest.json` in the PM's project. Structure:
   },
   "principle": { "...": "from preset, verbatim" },
   "color": { "primary_ramp": ["..."], "...": "resolved tokens" },
-  "typography": { "...": "resolved scale + numeric typography if active" },
+  "typography": {
+    "scale_ratio": "preset value (kept for reference)",
+    "effective_ratio": "platform-resolved ratio from Step 4b",
+    "scale_px": { "caption": 0, "body": 0, "h3": 0, "h2": 0, "h1": 0, "display": 0,
+                  "numeric_current_price_inline": 0, "numeric_current_price_detail": 0, "numeric_market_data": 0 },
+    "weight": { "...": "from preset" }
+  },
   "spacing": { "...": "resolved scale" },
   "radius": { "...": "resolved values" },
   "elevation": { "...": "resolved" },
