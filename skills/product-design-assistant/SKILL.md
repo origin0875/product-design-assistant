@@ -11,10 +11,15 @@ starter kit. The PM never needs to know what a Design Token, Semantic Token, Fou
 Variable, or 8pt Grid is — those are this Skill's internal implementation, never surfaced
 in questions or in the PM-facing output.
 
-**Current scope (Phase 1): build & iterate a Starter Kit.** Screen Generator (turning the
-kit into actual app screens) and Design Review (auditing uploaded screens against the
-kit) are planned but not yet implemented — if the PM asks for either, tell them plainly
-these are on the roadmap, not silently attempt a partial version.
+**Current scope: build & iterate a Starter Kit, plus a typography audit.** The full Screen
+Generator (turning the kit into actual app screens) and full Design Review (auditing
+uploaded screens against the kit for color/spacing/component issues) are still on the
+roadmap — if the PM asks for either, tell them plainly, don't silently attempt a partial
+version. **One slice of Design Review is built**, though: `modules/typography-audit.md`
+scans the PM's existing screens for font sizes that aren't on the resolved scale and offers
+to snap them back. Reach for it whenever the complaint is "字級還是亂 / 有些字大小很怪" — the
+build flow emits the correct scale but never rewrites already-written screens, so that
+mismatch needs the audit to close.
 
 ## Non-goals
 
@@ -32,8 +37,10 @@ these are on the roadmap, not silently attempt a partial version.
 
 - No `.design/design-manifest.json` in the project yet → **Build flow** (below)
 - Manifest exists, PM is asking for a change → **Iteration flow** (below)
-- PM asks for Screen Generator or Design Review → tell them this is Phase 2/3, not yet
-  available, and stop
+- Manifest exists, PM complains that font sizes still look wrong / inconsistent, or asks to
+  check which text isn't following the kit → **Typography audit** (`modules/typography-audit.md`)
+- PM asks for the full Screen Generator or full Design Review (color/spacing/components) →
+  tell them this is still on the roadmap (the typography audit is the one built slice), and stop
 
 ### Build flow
 
@@ -54,6 +61,10 @@ these are on the roadmap, not silently attempt a partial version.
 5. **Produce the PM-facing summary** — run `modules/summary-doc.md`, writes
    `.design/design-starter-kit.md`.
 6. **Show it, don't just describe it** — see Preview below.
+7. **If the project already had screens** (not a brand-new/empty repo), the new kit sits on
+   top of whatever sizes those screens hardcoded — so offer `modules/typography-audit.md`
+   right after the preview. This is where PMs otherwise conclude "I ran it but the text is
+   still wrong": the build never touched their existing screens. Say that, and offer to check.
 
 ### Iteration flow
 

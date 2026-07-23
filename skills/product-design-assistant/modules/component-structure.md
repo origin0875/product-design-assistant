@@ -104,12 +104,17 @@ size for both under- or over-sizes it in the other context (confirmed in the PM 
 detail screen). Both tiers are derived formulaically from the resolved type scale, not
 hand-picked per preset:
 
+All sizes below use the **platform-resolved** `typography.scale_px` from the manifest (see
+`modules/preset-blender.md` Step 4b) — never the raw preset ratio. This matters most here:
+an uncapped hero number is the single most common "why is this text gigantic" complaint on
+mobile, so the Detail tier is the one the mobile cap in Step 4b protects.
+
 - **Current Price — Inline** (used in cards, list rows, chat bubbles, anywhere the price
-  shares space with other content): size = the resolved **H1** level (`base_size_px *
-  scale_ratio^3`)
+  shares space with other content): size = the resolved **H1** level (`scale_px.h1`)
 - **Current Price — Detail** (used when the price is the primary subject of the whole
-  screen, e.g. a stock detail page): size = one step beyond **Display**
-  (`base_size_px * scale_ratio^5`) — noticeably larger than any other text on screen
+  screen, e.g. a stock detail page): size = `scale_px.numeric_current_price_detail`
+  (`base * effective_ratio^5`, mobile-capped) — the largest text on screen, but on a phone
+  still bounded so it never blows past a sensible size
 - **Percentage / Delta**: tabular-nums, paired with `color.up` / `color.down`, includes
   directional icon. Sized to match whichever Current Price tier it's paired with (Body
   size next to Inline, H1 size next to Detail).
