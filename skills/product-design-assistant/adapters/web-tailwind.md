@@ -23,11 +23,17 @@ layer underneath Tailwind:
   --color-divider: {manifest.color.divider};
   --color-text-primary: {manifest.color.text_primary};
   --color-text-secondary: {manifest.color.text_secondary};
-  --color-success: {manifest.color.success};
-  --color-warning: {manifest.color.warning};
-  --color-error: {manifest.color.error};
-  --color-info: {manifest.color.info};
-  /* + up/down/chart/risk if finance extension active */
+  /* Semantic colors are five roles each, not one value — emit all of them. An engineer
+     given a single --color-error will use it for text, icon and button background alike,
+     which is exactly the failure this structure exists to prevent. */
+  --color-error-fill: {manifest.color.error.fill};        /* decorative only */
+  --color-error-graphic: {manifest.color.error.graphic};  /* icons, borders — ≥3:1 */
+  --color-error-tint: {manifest.color.error.tint};        /* badge background */
+  --color-error-text: {manifest.color.error.text};        /* text, incl. on its tint */
+  --color-error-action-bg: {manifest.color.error.action.bg};
+  --color-error-action-fg: {manifest.color.error.action.fg};
+  /* ... success, warning, info — the same six each */
+  /* + up/down/chart_line/risk_* if finance extension active, same six each */
 
   /* Typography — read verbatim from manifest.typography.scale_px (already resolved in
      preset-blender.md Step 4b). Never recompute from effective_ratio here. */
@@ -173,6 +179,22 @@ text-white text-button font-button tracking-button leading-button disabled:opaci
 ```
 
 One recipe per component × variant × size combination that the manifest defines.
+
+## Using the color roles
+
+The component guide must show the role, not just the color. A recipe that says
+`text-error` is ambiguous; `text-error-text` on `bg-error-tint` is not. Spell out the four
+common cases so an engineer never has to guess:
+
+```md
+錯誤訊息文字      text-error-text
+錯誤徽章          bg-error-tint + text-error-text
+錯誤圖示/邊框     text-error-graphic / border-error-graphic
+破壞性按鈕        bg-error-action-bg + text-error-action-fg
+```
+
+`*-fill` appears in none of these on purpose: it is for decorative area fills only, and it
+is the one role with no contrast guarantee.
 
 ## Control height and hit target
 

@@ -22,11 +22,33 @@ color:
     relation: "complementary of primary, softened"
     default_hex: "#3AB795"
   neutral_scale: warm-gray
+  # 每個語意色是五個角色，不是單一值。fill 是品牌校準值、永不因對比而改；
+  # 要調整的是「怎麼用」。門檻與解析順序見 validators/contrast-check.md。
   semantic:
-    success: "#2FAE66"
-    warning: "#E2A33D"
-    error: "#E5484D"
-    info: "#4C9AFF"
+    success:
+      fill:    "#2FAE66"          # 品牌校準值，永不因對比而改
+      graphic: "#2EA963"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#E7F8EF"          # 徽章/chip 底色
+      text:    "#227F4B"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#2FAE66", fg: "#2A241F" }
+    warning:
+      fill:    "#E2A33D"          # 品牌校準值，永不因對比而改
+      graphic: "#C9871E"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#F8F2E7"          # 徽章/chip 底色
+      text:    "#966516"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#E2A33D", fg: "#2A241F" }
+    error:
+      fill:    "#E5484D"          # 品牌校準值，永不因對比而改
+      graphic: "#E5484D"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#F8E7E8"          # 徽章/chip 底色
+      text:    "#D01E23"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#E12F35", fg: "#FFFFFF" }
+    info:
+      fill:    "#4C9AFF"          # 品牌校準值，永不因對比而改
+      graphic: "#4495FF"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#E7EFF8"          # 徽章/chip 底色
+      text:    "#0065E7"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#4C9AFF", fg: "#2A241F" }
   contrast_target: AA
 
 typography:
@@ -97,12 +119,37 @@ extensions:
   finance:
     trigger_keywords: ["股票", "金融", "投資", "交易", "market", "stock", "trading", "finance"]
     color:
-      up: "#2FAE66"
-      down: "#E5484D"
-      chart_line: "#FF6B4A"
+      up:
+        fill:    "#2FAE66"          # 品牌校準值，永不因對比而改
+        graphic: "#2EA963"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#E7F8EF"          # 徽章/chip 底色
+        text:    "#227F4B"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#2FAE66", fg: "#2A241F" }
+      down:
+        fill:    "#E5484D"          # 品牌校準值，永不因對比而改
+        graphic: "#E5484D"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#F8E7E8"          # 徽章/chip 底色
+        text:    "#D01E23"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#E12F35", fg: "#FFFFFF" }
+      chart_line: "#FF603D"   # 圖表線是「理解內容所必需」的圖形物件，適用 SC 1.4.11 ≥3:1
       chart_grid: "neutral-200"
-      risk_high: "#E5484D"
-      risk_medium: "#E2A33D"
-      risk_low: "#2FAE66"
+      risk_high:
+        fill:    "#E5484D"          # 品牌校準值，永不因對比而改
+        graphic: "#E5484D"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#F8E7E8"          # 徽章/chip 底色
+        text:    "#D01E23"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#E12F35", fg: "#FFFFFF" }
+      risk_medium:
+        fill:    "#E2A33D"          # 品牌校準值，永不因對比而改
+        graphic: "#C9871E"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#F8F2E7"          # 徽章/chip 底色
+        text:    "#966516"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#E2A33D", fg: "#2A241F" }
+      risk_low:
+        fill:    "#2FAE66"          # 品牌校準值，永不因對比而改
+        graphic: "#2EA963"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#E7F8EF"          # 徽章/chip 底色
+        text:    "#227F4B"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#2FAE66", fg: "#2A241F" }
     typography:
       numeric_typography: required

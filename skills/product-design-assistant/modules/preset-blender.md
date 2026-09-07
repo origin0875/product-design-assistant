@@ -310,9 +310,19 @@ and `typography.webfont_weights` (what the adapter should actually request).
 
 ## Step 6 — Validate contrast
 
-Run every text/background and icon/background pairing in the resolved manifest through
-`validators/contrast-check.md`. Any failing pair is replaced with the nearest passing
-step from the same ramp (never hand-waved) and logged in `manifest.validation_log`.
+Run `validators/contrast-check.md` over the resolved manifest. Note that a semantic color
+is five roles (`fill` / `graphic` / `tint` / `text` / `action`), each with its own
+threshold — the presets already carry them; the brand primary from Step 2 must have the
+same five resolved here, since a PM-supplied brand color arrives as a single hex.
+
+The correction order matters and is not the obvious one: **change the foreground before
+changing the color.** A vivid brand color that fails with white text usually passes with
+dark ink, so the brand survives intact. Darkening the hue first is what turns a whole
+palette muddy to fix a problem that existed in one place. `fill` is never corrected —
+decorative fills are exempt under SC 1.4.11.
+
+Every correction is logged in `manifest.validation_log` with the role, both values and
+both ratios.
 
 ## Step 7 — Write the manifest
 
