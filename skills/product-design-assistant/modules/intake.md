@@ -28,7 +28,10 @@ Ask in two batches so the PM isn't hit with everything at once.
    - "我不確定,你幫我判斷" → infer from product type answer (finance/B2B → professional-trustworthy; social/lifestyle/ecommerce → friendly-playful; content/reading/premium → minimal-elegant)
 6. 有沒有指定的品牌主色?(如果有品牌 Logo 或指定色,直接說色票或描述,例如「深藍色」「跟 Logo 一樣的橘色」；沒有的話選"沒有,用系統建議的顏色即可")
 7. 這個產品的資訊密度高不高? Options: "很多數據/列表,使用者會頻繁掃描比對"(dense), "適中,一般 App 的量"(standard), "很簡潔,一次只看少量內容"(sparse)
-   - Maps to `component_bias.density` override on top of the preset default.
+   - Maps to `component_bias.density` override on top of the preset default (Step 4),
+     **and** selects the type scale ratio (Step 4b). It is the single information-density
+     input, so keep it phrased in terms of how the PM's users read the screen — do not
+     narrow it into a whitespace-only question.
 
 ## Output of this module
 

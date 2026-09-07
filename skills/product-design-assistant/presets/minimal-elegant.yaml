@@ -30,7 +30,9 @@ color:
   contrast_target: AA
 
 typography:
-  scale_ratio: 1.333          # perfect fourth — dramatic, editorial hierarchy
+  # scale_ratio 不在這裡。字級階梯是資訊設計，不是視覺調性：同一份資料表的重要性
+  # 排序不會因為換個調性而改變，而級距一動，每一頁的行數、欄寬與斷行都會跟著變。
+  # 由 preset-blender.md Step 4b 依產品類型與資訊密度解析。不要把它加回來。
   base_size_px: 16
   weight:
     display: 500

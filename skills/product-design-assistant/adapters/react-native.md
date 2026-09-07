@@ -21,8 +21,8 @@ export const colors = {
   // + up/down/chart/risk if finance extension active
 } as const;
 
-// fontSize values come straight from manifest.typography.scale_px (platform-resolved in
-// preset-blender.md Step 4b) — do NOT recompute from scale_ratio in the adapter.
+// fontSize values come straight from manifest.typography.scale_px (resolved in
+// preset-blender.md Step 4b) — do NOT recompute from effective_ratio in the adapter.
 export const typography = {
   // fontWeight: RN takes a string enum — emit manifest.typography.weight as a string.
   // letterSpacing: RN has no em, the value is in POINTS. Convert per level:

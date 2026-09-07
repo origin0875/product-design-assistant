@@ -29,8 +29,8 @@ layer underneath Tailwind:
   --color-info: {manifest.color.info};
   /* + up/down/chart/risk if finance extension active */
 
-  /* Typography — read verbatim from manifest.typography.scale_px (already platform-resolved
-     in preset-blender.md Step 4b). Never recompute from scale_ratio here. */
+  /* Typography — read verbatim from manifest.typography.scale_px (already resolved in
+     preset-blender.md Step 4b). Never recompute from effective_ratio here. */
   --font-size-display: {manifest.typography.scale_px.display}px;
   --font-size-h1: {manifest.typography.scale_px.h1}px;
   /* ... h2, h3, body, caption, button, label — each straight from scale_px */

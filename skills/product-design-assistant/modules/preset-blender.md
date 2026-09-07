@@ -45,22 +45,44 @@ If `intake_answers.density_override` differs from `preset.component_bias.density
 override `spacing.density` and adjust the spacing scale multiplier accordingly (dense →
 tighten the scale ~15%, sparse → loosen ~15%; standard → use preset default unchanged).
 
-## Step 4b — Resolve the type scale (platform-aware)
+## Step 4b — Resolve the type scale
 
-The preset's `scale_ratio` is calibrated for an **editorial / web** reading width. Applied
-verbatim to a phone (~390pt wide), a dramatic ratio like minimal-elegant's 1.333 pushes the
-top of the scale to sizes that read as "obviously too big" (e.g. a 67px hero number, a 50px
-screen title). So the ratio must be resolved against the target platform, not copied raw.
+The type scale does **not** come from the preset. Which sizes exist, and how far apart they
+sit, is information design: it encodes what matters most on the screen, and that ordering
+does not change because the product's tone changed. Tone lives in weight, tracking,
+leading, typeface and color — all of which this module still takes from the preset.
 
-**1. Pick the effective ratio.**
+The practical reason matters as much as the principle. Ratio is the one typography value
+whose blast radius is the whole layout: change it and every screen's line count, column
+width and wrap points move. A PM switching tone expects a different feel, not a reflow of
+every page they have already built.
 
-- If `intake_answers.platforms` contains **only** `web` → `effective_ratio = preset.scale_ratio` (unchanged).
-- If it contains **any** mobile platform (`ios` / `android`) → this is a mobile-first build
-  (one React Native codebase ships both), so **`effective_ratio = min(preset.scale_ratio, 1.25)`**.
-  This keeps friendly-playful (1.25) and professional (1.20) intact, and only tames the most
-  aggressive editorial ratio (minimal-elegant 1.333 → 1.25) where it actually hurts on a phone.
+**1. Pick the base ratio from information density.** `intake_answers.density_override`
+already asks exactly this question in PM language ("很多數據/列表,使用者會頻繁掃描比對" /
+"適中" / "很簡潔,一次只看少量內容") — Q7 in `intake.md`. Nothing new is asked.
 
-**2. Derive every level as a *consecutive* power of the effective ratio** — no gaps. A gap in
+| `density_override` | base ratio | why |
+|--------------------|-----------|-----|
+| `dense`    | 1.200 | scanning and comparing; small steps keep more rows in view and keep the jump between a label and its value from becoming a leap |
+| `standard` | 1.250 | the general case |
+| `sparse`   | 1.333 | reading one thing at a time; an editorial hierarchy is the point |
+
+If the PM did not answer Q7, derive it from `product_type`: finance / B2B後台 / 工具 →
+`dense`; 內容媒體閱讀 → `sparse`; everything else → `standard`.
+
+**2. Apply the product-type floor.** A data product stays tight even when the PM asked for
+a roomy feel — dramatic size steps hurt scanning regardless of how much whitespace sits
+around them. If `product_type` is finance, B2B後台 or 工具, then
+`base_ratio = min(base_ratio, 1.250)`. Whitespace is still free to grow: that is Step 4's
+job, and it is the right lever for "看起來太擠" in a dense product.
+
+**3. Apply the mobile cap.** If `intake_answers.platforms` contains any mobile platform
+(`ios` / `android`), this is a mobile-first build — one React Native codebase ships both —
+so `effective_ratio = min(base_ratio, 1.25)`. On a ~390pt phone a 1.333 scale pushes the
+top of the ladder to sizes that read as obviously too big (a 67px hero number, a 50px
+screen title). Web-only keeps the base ratio as-is.
+
+**4. Derive every level as a *consecutive* power of the effective ratio** — no gaps. A gap in
 the scale is what forces engineers to hand-pick an off-scale size, which is exactly the
 inconsistency this Skill exists to prevent:
 
@@ -78,14 +100,14 @@ inconsistency this Skill exists to prevent:
 The **only** intentionally non-consecutive size is the finance hero number below — every
 general text level is a neighbour of the next, so there is never a "nothing fits here" hole.
 
-**3. Cap the extremes on mobile** (safety net on top of the ratio cap):
+**5. Cap the extremes on mobile** (safety net on top of the ratio cap):
 
 - `display` (mobile) = `min(display, 40)`
 - `numeric_current_price_detail` (mobile) = `min(round(base * ratio^5), 52)`
 
 On web, no cap — editorial hierarchy is the point there.
 
-**4. Numeric typography (finance), if active** — resolved from the *same* effective ratio so
+**6. Numeric typography (finance), if active** — resolved from the *same* effective ratio so
 mobile and web stay internally consistent:
 
 - `numeric_current_price_inline` = the resolved **h1** size
@@ -94,7 +116,11 @@ mobile and web stay internally consistent:
 
 Write the fully-resolved pixel values into `typography.scale_px` in the manifest (see Step 7).
 Adapters must read those resolved values verbatim — they never recompute from the ratio, so
-the platform decision made here is the single place it lives.
+every decision made here lives in exactly one place.
+
+Two presets on the same product therefore produce the **same** sizes and differ everywhere
+else. That is the intended result, not a bug to be corrected by reintroducing a per-preset
+ratio: it is what makes tone a safe thing for a PM to change their mind about.
 
 ## Step 4c — Resolve weight + letter-spacing
 
@@ -272,8 +298,10 @@ Write to `.design/design-manifest.json` in the PM's project. Structure:
   "principle": { "...": "from preset, verbatim" },
   "color": { "primary_ramp": ["..."], "...": "resolved tokens" },
   "typography": {
-    "scale_ratio": "preset value (kept for reference)",
-    "effective_ratio": "platform-resolved ratio from Step 4b",
+    "scale_basis": { "density": "dense | standard | sparse",
+                     "product_type": "...",
+                     "base_ratio": 0 },
+    "effective_ratio": "base_ratio after the product-type floor and the mobile cap (Step 4b)",
     "scale_px": { "caption": 0, "body": 0, "h3": 0, "h2": 0, "h1": 0, "display": 0,
                   "numeric_current_price_inline": 0, "numeric_current_price_detail": 0, "numeric_market_data": 0 },
     "weight": { "display": 0, "h1": 0, "h2": 0, "h3": 0,
@@ -313,6 +341,10 @@ message:
    - color mentions → re-run Step 2 only, keep everything else
    - "圓角/radius/更圓/更方" → bump/reduce the relevant `radius.scale_px` step(s)
    - "太擠/太鬆/density" → re-run Step 4 only
+   - "字太大/太小/標題太誇張" → re-run Step 4b. Tell the PM plainly that this one reflows
+     every screen — line counts, column widths and wrap points all move — unlike a weight or
+     tracking change. If what they actually mean is "畫面太擠", that is Step 4 (density), and
+     it is the cheaper fix; ask which one they want before rewriting the scale.
    - "字太細/太粗/標題不夠重" → adjust `typography.weight` for the named levels only,
      via Step 4c (do not swap the whole preset just to change weight)
    - "字距太擠/太開" → re-run Step 4c's letter-spacing table only, keeping the CJK guard
