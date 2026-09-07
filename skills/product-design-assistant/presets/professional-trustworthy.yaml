@@ -24,15 +24,39 @@ color:
     relation: "primary hue + 30, lower saturation"
     default_hex: "#5B7A9E"
   neutral_scale: cool-gray
+  # 每個語意色是五個角色，不是單一值。fill 是品牌校準值、永不因對比而改；
+  # 要調整的是「怎麼用」。門檻與解析順序見 validators/contrast-check.md。
   semantic:
-    success: "#1F9254"
-    warning: "#B7791F"
-    error: "#C53030"
-    info: "#2B6CB0"
+    success:
+      fill:    "#1F9254"          # 品牌校準值，永不因對比而改
+      graphic: "#1F9254"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#E7F8EF"          # 徽章/chip 底色
+      text:    "#1B804A"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#1D874E", fg: "#FFFFFF" }
+    warning:
+      fill:    "#B7791F"          # 品牌校準值，永不因對比而改
+      graphic: "#B7791F"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#F8F1E7"          # 徽章/chip 底色
+      text:    "#97641A"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#A26B1C", fg: "#FFFFFF" }
+    error:
+      fill:    "#C53030"          # 品牌校準值，永不因對比而改
+      graphic: "#C53030"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#F8E7E7"          # 徽章/chip 底色
+      text:    "#C53030"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#C53030", fg: "#FFFFFF" }
+    info:
+      fill:    "#2B6CB0"          # 品牌校準值，永不因對比而改
+      graphic: "#2B6CB0"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+      tint:    "#E7F0F8"          # 徽章/chip 底色
+      text:    "#2B6CB0"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+      action:  { bg: "#2B6CB0", fg: "#FFFFFF" }
   contrast_target: AA
 
 typography:
-  scale_ratio: 1.200          # minor third — steady, not dramatic
+  # scale_ratio 不在這裡。字級階梯是資訊設計，不是視覺調性：同一份資料表的重要性
+  # 排序不會因為換個調性而改變，而級距一動，每一頁的行數、欄寬與斷行都會跟著變。
+  # 由 preset-blender.md Step 4b 依產品類型與資訊密度解析。不要把它加回來。
   base_size_px: 16
   weight:
     display: 700
@@ -44,6 +68,13 @@ typography:
     button: 600
     label: 500
   letter_spacing_bias: tight
+  line_height_bias: normal        # 掃描效率優先，不刻意拉開
+  font_family:
+    character: "中性 grotesque，工程感，數字要有明確的 tabular 表現"
+    latin: ["IBM Plex Sans", "Source Sans 3"]
+    cjk: ["Noto Sans TC"]
+    system_only: ['-apple-system', "PingFang TC", "Microsoft JhengHei"]
+    tabular_required: true        # finance extension 觸發時必須成立
   numeric_typography: optional   # becomes "required" if finance extension triggers
 
 spacing:
@@ -87,12 +118,37 @@ extensions:
   finance:
     trigger_keywords: ["股票", "金融", "投資", "交易", "market", "stock", "trading", "finance", "投資組合", "資產"]
     color:
-      up: "#1F9254"
-      down: "#C53030"
-      chart_line: "#2B6CB0"
+      up:
+        fill:    "#1F9254"          # 品牌校準值，永不因對比而改
+        graphic: "#1F9254"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#E7F8EF"          # 徽章/chip 底色
+        text:    "#1B804A"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#1D874E", fg: "#FFFFFF" }
+      down:
+        fill:    "#C53030"          # 品牌校準值，永不因對比而改
+        graphic: "#C53030"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#F8E7E7"          # 徽章/chip 底色
+        text:    "#C53030"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#C53030", fg: "#FFFFFF" }
+      chart_line: "#2B6CB0"   # 圖表線是「理解內容所必需」的圖形物件，適用 SC 1.4.11 ≥3:1
       chart_grid: "neutral-200"
-      risk_high: "#C53030"
-      risk_medium: "#B7791F"
-      risk_low: "#1F9254"
+      risk_high:
+        fill:    "#C53030"          # 品牌校準值，永不因對比而改
+        graphic: "#C53030"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#F8E7E7"          # 徽章/chip 底色
+        text:    "#C53030"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#C53030", fg: "#FFFFFF" }
+      risk_medium:
+        fill:    "#B7791F"          # 品牌校準值，永不因對比而改
+        graphic: "#B7791F"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#F8F1E7"          # 徽章/chip 底色
+        text:    "#97641A"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#A26B1C", fg: "#FFFFFF" }
+      risk_low:
+        fill:    "#1F9254"          # 品牌校準值，永不因對比而改
+        graphic: "#1F9254"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
+        tint:    "#E7F8EF"          # 徽章/chip 底色
+        text:    "#1B804A"          # 對 tint ≥4.5:1（故對 surface 亦達標）
+        action:  { bg: "#1D874E", fg: "#FFFFFF" }
     typography:
       numeric_typography: required

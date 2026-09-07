@@ -21,15 +21,45 @@ export const colors = {
   // + up/down/chart/risk if finance extension active
 } as const;
 
-// fontSize values come straight from manifest.typography.scale_px (platform-resolved in
-// preset-blender.md Step 4b) — do NOT recompute from scale_ratio in the adapter.
+// fontSize values come straight from manifest.typography.scale_px (resolved in
+// preset-blender.md Step 4b) — do NOT recompute from effective_ratio in the adapter.
 export const typography = {
-  display: { fontSize: {scale_px.display}, fontWeight: '{weight.display}', letterSpacing: N },
-  h1: { fontSize: {scale_px.h1}, fontWeight: '{weight.h1}' },
+  // fontWeight: RN takes a string enum — emit manifest.typography.weight as a string.
+  // letterSpacing: RN has no em, the value is in POINTS. Convert per level:
+  //   round(manifest.typography.letter_spacing_em[level] * scale_px[level], 2)
+  // Do the arithmetic when generating this file; never leave an expression in the output.
+  // lineHeight: RN takes POINTS, not a ratio — round(line_height[level] * scale_px[level]).
+  // Unlike CSS there is no unitless form, so every level must be computed here; omitting
+  // it makes RN fall back to the font's own metrics, which differ per platform.
+  display: { fontSize: {scale_px.display}, fontWeight: '{weight.display}',
+             letterSpacing: {letter_spacing_em.display * scale_px.display, rounded},
+             lineHeight: {round(line_height.display * scale_px.display)} },
+  h1: { fontSize: {scale_px.h1}, fontWeight: '{weight.h1}',
+        letterSpacing: {letter_spacing_em.h1 * scale_px.h1, rounded},
+        lineHeight: {round(line_height.h1 * scale_px.h1)} },
   // h2, h3, body, caption, button, label ...
   // numericCurrentPrice / numericPercentage / numericMarketData if finance extension active
   //   each includes fontVariant: ['tabular-nums'] — RN's equivalent of CSS tabular-nums
 } as const;
+
+// Family — RN cannot load a font from a URL. The font files must be linked into the
+// native projects (react-native.config.js + `npx react-native-asset`, or manually via
+// Info.plist / android/app/src/main/assets/fonts). Emit the names here AND state the
+// linking step in component-guide.md; a fontFamily naming an unlinked font fails
+// silently on iOS and crashes some Android builds.
+//
+// Android does NOT combine fontFamily with fontWeight: it needs the weight-specific
+// PostScript name. So emit one entry per weight the manifest actually uses, and have
+// components reference these instead of setting fontWeight on a custom family.
+// On a CJK build these are the only three steps Step 4c allows (400/500/600) — emit
+// `bold` only when the project bundles its own CJK font.
+export const fonts = {
+  regular: '{latin_face}-Regular', medium: '{latin_face}-Medium',
+  semibold: '{latin_face}-SemiBold',
+} as const;
+// CJK glyphs fall through to the OS face (PingFang TC / Noto Sans CJK) unless the CJK
+// font is also linked — on RN there is no per-glyph fallback chain like CSS gives you,
+// so a mixed-script string renders in whatever the single named family covers.
 
 export const spacing = { 1: N, 2: N, 3: N, 4: N, 5: N, 6: N, 7: N, 8: N } as const; // from manifest.spacing.scale
 
@@ -64,6 +94,23 @@ as RN `StyleSheet.create` recipes instead of Tailwind classes, e.g.:
 StyleSheet: paddingHorizontal: spacing[6], paddingVertical: spacing[3],
 borderRadius: radius.button, backgroundColor: colors.primary[500]
 ```
+
+## Control height and hit target
+
+Emit `control_height` and `min_hit_target` from the manifest into `tokens.ts`, and set an
+explicit `height` on every control. RN reaches the hit floor with `hitSlop`, which expands
+the touch area without affecting layout:
+
+```ts
+const slop = (h: number) => { const d = Math.max(0, (tokens.minHitTarget - h) / 2);
+                              return { top: d, bottom: d, left: d, right: d }; };
+<Pressable hitSlop={slop(tokens.controlHeight.md)} />
+```
+
+Because one codebase ships to both platforms, Step 5 already resolved `min_hit_target` to
+the larger floor (48 when Android is included). Split it with `Platform.select` only if the
+extra 4pt on iOS causes a real overlap — a hit area that is too generous is a far smaller
+problem than one that is too small.
 
 ## Platform-conventions integration
 

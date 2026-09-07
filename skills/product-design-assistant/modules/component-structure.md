@@ -17,19 +17,56 @@ final_spec = component_structure[name]
            + platform_convention[name]       (placement/native-pattern overrides, if applicable)
 ```
 
+## Control sizing — applies to every interactive component
+
+Two different numbers, and conflating them is the usual mistake:
+
+- **Visual height** is how tall the control looks.
+- **Hit target** is the area that responds to a finger or pointer. It may be larger than
+  the visual box, and on touch platforms it usually must be.
+
+**Visual height by size:**
+
+| Size | Height | Used by |
+|------|--------|---------|
+| `sm` | 32 | dense toolbars, table-row actions, chips |
+| `md` | 40 | the default for Button, Input, Select |
+| `lg` | 48 | primary actions on mobile, full-width CTAs |
+
+**Padding is derived from height, never chosen independently.** Vertical padding =
+`(height − line_box) / 2`, where `line_box` is that level's resolved size × line-height
+(Steps 4b/4d). Authoring padding directly is exactly how a control ends up 37px tall: each
+padding value looked like a reasonable number from the spacing scale, and nobody added them
+up. Horizontal padding keeps the existing rule — at least 1.5× the *derived* vertical
+padding.
+
+**Hit target minimum** is resolved per platform (`platform-conventions/*.md`); web has no
+convention file, so its floor lives in the web adapter. Where the visual height sits below
+that floor — a 40px `md` button on a phone, any icon-only control — **extend the interactive
+area without changing the visual box**: a transparent inset overlay on web, `hitSlop` on
+React Native. Do not inflate the control to reach the floor. Material's own filled button is
+40dp tall inside a 48dp touch target for this reason; enlarging the visible box instead is
+what makes a design look like it was drawn for a tablet.
+
+The smallest interactive thing on a screen is where this always fails — an icon-only close,
+a chip's remove ✕, a sort caret. Those have no label to give them height, so their visual box
+is just the icon and the hit area has to be added deliberately. Check them explicitly; they
+are the ones that get shipped at 14px.
+
 ## Button
 
-- **Sizes**: `sm`, `md`, `lg`
+- **Sizes**: `sm`, `md`, `lg` (heights from **Control sizing** above)
 - **Variants**: `primary` (solid), `secondary` (outline or tonal — preset decides), `tertiary` (text-only), `destructive`
 - **States**: `default`, `hover` (web only), `pressed`, `disabled`, `loading`
 - **Props**: label, optional leading/trailing icon, full-width flag
-- **Padding**: horizontal ≥ 1.5× vertical padding (from spacing scale)
+- **Padding**: vertical derived from the size's height (see **Control sizing**);
+  horizontal ≥ 1.5× that derived vertical padding
 - **Radius token**: `radius.button`
 - **Usage rule**: exactly one `primary` button visible per screen/section — never two competing primaries
 
 ## Input
 
-- **Sizes**: `md`, `lg` (no `sm` — inputs need minimum tap/click target)
+- **Sizes**: `md`, `lg` (no `sm` — an input at 32px cannot carry a comfortable target)
 - **Variants**: `text`, `number` (uses numeric typography if preset defines it), `search` (see Search), `textarea`
 - **States**: `default`, `focused`, `filled`, `error`, `disabled`
 - **Props**: label (always visible, never placeholder-only), helper text, error text, leading/trailing icon
