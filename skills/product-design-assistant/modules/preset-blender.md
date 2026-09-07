@@ -138,6 +138,33 @@ minimal-elegant deliberately flattens to 500/400 and carries hierarchy with size
 whitespace instead). Never substitute a weight the preset didn't specify, and never
 collapse the eight levels into "bold / regular".
 
+**1b. Mobile CJK weight ceiling.** If `intake_answers.platforms` contains any mobile
+platform **and** the product's primary language is CJK, clamp every level to **600**, and
+use only the three steps 400 / 500 / 600.
+
+The reason is that the ladder above cannot be rendered. The iOS system Chinese face,
+PingFang TC, ships six weights — 極細 / 纖細 / 細 / 標準 / 中黑 / 中粗 — topping out at
+中粗 (Semibold, 600). There is no 700. Asking for 700 gets Semibold or a synthetic bold,
+while the Latin face beside it (SF) really does have 700 — so a mixed string like
+「台積電 1,085」 renders the Chinese and the digits at visibly different weights. That is
+why the clamp applies to **both scripts at that level**, not only to the CJK one: within-line
+consistency is the thing being protected, and a level that reads 700 for half its characters
+is worse than a level that is 600 throughout.
+
+Android's bundled CJK face has a different weight set again, and may not carry 600 —
+verify 600 on an Android device; where it synthesises, drop that level to 500 and log it.
+A project that bundles its own CJK font (see Step 4e) escapes all of this and keeps the
+preset's full ladder; note that option in `component-guide.md` when the clamp costs the
+design something.
+
+What the clamp costs is worth stating plainly to the PM: on professional-trustworthy it
+collapses display/h1 (700) and h2/h3 (600) into a single weight, so on mobile the heading
+hierarchy rests on size alone. That is the same choice Material 3's baseline scale makes —
+its display, headline and title-large roles are all weight 400 — so it is a defensible
+place to land, not a degradation. Log every clamped level in `validation_log`.
+
+minimal-elegant needs no clamp: its ladder is already 500/400 throughout.
+
 **2. Letter-spacing.** Map `preset.typography.letter_spacing_bias` to per-level `em`
 values. A single global number is always wrong here: optical need runs in opposite
 directions at the two ends of the scale — large type needs tightening, small type needs
@@ -346,7 +373,10 @@ message:
      tracking change. If what they actually mean is "畫面太擠", that is Step 4 (density), and
      it is the cheaper fix; ask which one they want before rewriting the scale.
    - "字太細/太粗/標題不夠重" → adjust `typography.weight` for the named levels only,
-     via Step 4c (do not swap the whole preset just to change weight)
+     via Step 4c (do not swap the whole preset just to change weight). On a mobile CJK
+     build, "標題不夠重" usually cannot be solved by raising the number — Step 4c's 600
+     ceiling is a limit of the system font, not a preference. Offer the two real options:
+     bundle a CJK font with more weights, or raise the level's size instead.
    - "字距太擠/太開" → re-run Step 4c's letter-spacing table only, keeping the CJK guard
    - "字體換成 X / 不要外部字型 / 公司內網載不到" → re-run Step 4e only, and re-check
      the weight clamp: dropping to a system-only build changes which weights survive

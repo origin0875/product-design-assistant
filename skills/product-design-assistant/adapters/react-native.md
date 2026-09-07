@@ -51,9 +51,11 @@ export const typography = {
 // Android does NOT combine fontFamily with fontWeight: it needs the weight-specific
 // PostScript name. So emit one entry per weight the manifest actually uses, and have
 // components reference these instead of setting fontWeight on a custom family.
+// On a CJK build these are the only three steps Step 4c allows (400/500/600) — emit
+// `bold` only when the project bundles its own CJK font.
 export const fonts = {
   regular: '{latin_face}-Regular', medium: '{latin_face}-Medium',
-  semibold: '{latin_face}-SemiBold', bold: '{latin_face}-Bold',
+  semibold: '{latin_face}-SemiBold',
 } as const;
 // CJK glyphs fall through to the OS face (PingFang TC / Noto Sans CJK) unless the CJK
 // font is also linked — on RN there is no per-glyph fallback chain like CSS gives you,
