@@ -95,6 +95,23 @@ StyleSheet: paddingHorizontal: spacing[6], paddingVertical: spacing[3],
 borderRadius: radius.button, backgroundColor: colors.primary[500]
 ```
 
+## Control height and hit target
+
+Emit `control_height` and `min_hit_target` from the manifest into `tokens.ts`, and set an
+explicit `height` on every control. RN reaches the hit floor with `hitSlop`, which expands
+the touch area without affecting layout:
+
+```ts
+const slop = (h: number) => { const d = Math.max(0, (tokens.minHitTarget - h) / 2);
+                              return { top: d, bottom: d, left: d, right: d }; };
+<Pressable hitSlop={slop(tokens.controlHeight.md)} />
+```
+
+Because one codebase ships to both platforms, Step 5 already resolved `min_hit_target` to
+the larger floor (48 when Android is included). Split it with `Platform.select` only if the
+extra 4pt on iOS causes a real overlap — a hit area that is too generous is a far smaller
+problem than one that is too small.
+
 ## Platform-conventions integration
 
 Since one React Native codebase typically ships to both iOS and Android, this adapter

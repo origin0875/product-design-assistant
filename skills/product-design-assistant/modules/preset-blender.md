@@ -301,6 +301,12 @@ and `typography.webfont_weights` (what the adapter should actually request).
 - For each platform in `intake_answers.platforms`, note which
   `platform-conventions/{ios,android}.md` file(s) apply. Web has no platform-convention
   file — its conventions live directly in the adapter.
+- Resolve control sizing. Write `components.control_height` (`sm`/`md`/`lg` from
+  **Control sizing**) and `components.min_hit_target` — the **largest** floor across the
+  selected platforms, since one build ships to all of them: 48 if Android is included,
+  else 44 if iOS is, else 24 for web-only (WCAG 2.2 SC 2.5.8, Level AA). Then compute each
+  control's vertical padding from its height and the level's resolved line box, and write
+  those too — adapters must not re-derive padding from the spacing scale.
 
 ## Step 6 — Validate contrast
 

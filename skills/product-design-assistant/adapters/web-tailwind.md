@@ -62,6 +62,13 @@ layer underneath Tailwind:
   --font-family-body: {manifest.typography.font_family.body};
   --font-family-display: {manifest.typography.font_family.display};
 
+  /* Control sizing — from manifest.components (Step 5). Heights are the visual box;
+     the hit floor is separate and handled by the overlay recipe in the component guide. */
+  --control-height-sm: {manifest.components.control_height.sm}px;
+  --control-height-md: {manifest.components.control_height.md}px;
+  --control-height-lg: {manifest.components.control_height.lg}px;
+  --min-hit-target: {manifest.components.min_hit_target}px;
+
   /* Spacing */
   --space-1: {scale[0]}px; --space-2: {scale[1]}px; /* ... through scale[7] */
 
@@ -166,6 +173,32 @@ text-white text-button font-button tracking-button leading-button disabled:opaci
 ```
 
 One recipe per component × variant × size combination that the manifest defines.
+
+## Control height and hit target
+
+Set an explicit `height` (or `min-height`) on every control from `--control-height-*` and
+let the derived vertical padding sit inside it. Do not build the height out of padding
+alone — that is how a button lands at 37px while every individual value looked correct.
+
+Web's own floor is **24 × 24 CSS px** (WCAG 2.2 SC 2.5.8, Level AA); `--min-hit-target`
+carries a larger value when the same tokens also ship to a phone. Anything whose visual box
+is smaller than the floor — icon-only buttons, a chip's remove ✕, sort carets — gets a
+transparent inset overlay rather than a bigger box:
+
+```css
+.icon-button { position: relative; }
+.icon-button::before {
+  content: ""; position: absolute; inset: 50% auto auto 50%;
+  width: var(--min-hit-target); height: var(--min-hit-target);
+  transform: translate(-50%, -50%);
+}
+```
+
+State in `component-guide.md` that this is required, not optional, and list every
+icon-only control in the generated components so an engineer can check them. SC 2.5.8's
+spacing exception can make an undersized target technically conformant when nothing sits
+within 24px of it — do not rely on that: it depends on layout that changes, and it is still
+a control people miss.
 
 ## The type set — four classes, always together
 

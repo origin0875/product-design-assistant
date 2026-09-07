@@ -6,6 +6,13 @@ only overrides **interaction pattern and placement** — never colors or type sc
 not copy Material Design's actual spacing/color/component values; only the interaction
 conventions users already expect from Android.
 
+## Touch targets
+
+- Minimum hit target: **48 × 48 dp** — larger than iOS's 44, so a shared React Native
+  build must satisfy 48 or split the value with `Platform.select`.
+- Same exception and same method as the iOS file: an ergonomic floor, reached with
+  `hitSlop` rather than by growing the visual box.
+
 ## Navigation
 
 - Back navigation: system back gesture/button (edge swipe or nav-bar back) — do not

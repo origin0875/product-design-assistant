@@ -6,6 +6,15 @@ only overrides **interaction pattern and placement** — never colors or type sc
 not copy Apple HIG's actual spacing/color/component values; only the interaction
 conventions users already expect from iOS.
 
+## Touch targets
+
+- Minimum hit target: **44 × 44 pt**.
+- This is a deliberate exception to the "no values" rule above: it is an ergonomic floor
+  set by the size of a finger, not a style value, and it differs between the two platforms
+  — which is precisely the kind of thing this file exists to carry.
+- Reach it with `hitSlop`, not by enlarging the control's visual box (see **Control
+  sizing** in `modules/component-structure.md`).
+
 ## Navigation
 
 - Back navigation: leading-edge back button/chevron + swipe-from-left-edge gesture —
