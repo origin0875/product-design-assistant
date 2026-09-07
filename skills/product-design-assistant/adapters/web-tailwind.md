@@ -35,6 +35,19 @@ layer underneath Tailwind:
   --font-size-h1: {manifest.typography.scale_px.h1}px;
   /* ... h2, h3, body, caption, button, label — each straight from scale_px */
 
+  /* Weight — from manifest.typography.weight (resolved in preset-blender.md Step 4c).
+     Emit all eight levels even where several share a value: the preset's ladder is what
+     separates 專業穩重 from 簡約優雅, and collapsing it here erases that difference. */
+  --font-weight-display: {manifest.typography.weight.display};
+  --font-weight-h1: {manifest.typography.weight.h1};
+  /* ... h2, h3, body, caption, button, label — each straight from weight */
+
+  /* Tracking — from manifest.typography.letter_spacing_em (Step 4c). Stored in em, used
+     in em: it is size-relative, so it stays correct if the scale is re-resolved later. */
+  --letter-spacing-display: {manifest.typography.letter_spacing_em.display}em;
+  --letter-spacing-h1: {manifest.typography.letter_spacing_em.h1}em;
+  /* ... h2, h3, body, caption, button, label — each straight from letter_spacing_em */
+
   /* Spacing */
   --space-1: {scale[0]}px; --space-2: {scale[1]}px; /* ... through scale[7] */
 
@@ -68,9 +81,23 @@ theme: {
       // ...
     },
     fontSize: {
+      // Keep these scalar (not Tailwind's [size, {...}] tuple form) so size, weight and
+      // tracking stay three composable classes: text-h1 font-h1 tracking-h1.
       display: 'var(--font-size-display)',
       h1: 'var(--font-size-h1)',
       // ...
+    },
+    fontWeight: {
+      display: 'var(--font-weight-display)',
+      h1: 'var(--font-weight-h1)',
+      // ... h2, h3, body, caption, button, label
+      // Without this block `font-button` in the component recipes below is not a real
+      // Tailwind class and silently renders at the browser default weight.
+    },
+    letterSpacing: {
+      display: 'var(--letter-spacing-display)',
+      h1: 'var(--letter-spacing-h1)',
+      // ... h2, h3, body, caption, button, label
     },
     spacing: { /* map scale to Tailwind's spacing keys */ },
     borderRadius: {
@@ -91,10 +118,19 @@ Human-readable (for engineers, not PM) mapping of each component in
 ```md
 ## Button — primary, md
 `inline-flex items-center justify-center px-6 py-3 rounded-button bg-primary-500
-text-white font-button disabled:opacity-40`
+text-white text-button font-button tracking-button disabled:opacity-40`
 ```
 
 One recipe per component × variant × size combination that the manifest defines.
+
+## The type trio
+
+Every text-bearing element in the component guide must carry all three of
+`text-{level}`, `font-{level}` and `tracking-{level}` — never a size class on its own.
+A lone `text-h1` inherits whatever weight and tracking the surrounding element happened
+to set, which is exactly the drift `modules/typography-audit.md` later has to clean up.
+State this rule at the top of the generated `component-guide.md`, not just in the
+recipes, so engineers writing new screens follow it too.
 
 ## Numeric typography (if finance extension active)
 

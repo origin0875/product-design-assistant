@@ -96,6 +96,51 @@ Write the fully-resolved pixel values into `typography.scale_px` in the manifest
 Adapters must read those resolved values verbatim — they never recompute from the ratio, so
 the platform decision made here is the single place it lives.
 
+## Step 4c — Resolve weight + letter-spacing
+
+`typography.weight` and `typography.letter_spacing_bias` are the two preset fields that
+were previously copied toward the manifest without ever becoming usable numbers — the web
+adapter had no weight or tracking output at all, so on web those presets' distinctions
+silently evaporated. Resolve both here, for the same reason as Step 4b: adapters read
+verbatim, they never interpret.
+
+**1. Weight.** Copy `preset.typography.weight` into `manifest.typography.weight` for all
+eight levels (display, h1, h2, h3, body, caption, button, label) as integers. No platform
+adjustment — the weight ladder *is* the differentiator between presets (professional steps
+700→600→400; friendly-playful raises the whole ladder and puts button at 700;
+minimal-elegant deliberately flattens to 500/400 and carries hierarchy with size and
+whitespace instead). Never substitute a weight the preset didn't specify, and never
+collapse the eight levels into "bold / regular".
+
+**2. Letter-spacing.** Map `preset.typography.letter_spacing_bias` to per-level `em`
+values. A single global number is always wrong here: optical need runs in opposite
+directions at the two ends of the scale — large type needs tightening, small type needs
+opening up.
+
+| Token   | tight   | normal  | wide    |
+|---------|---------|---------|---------|
+| display | -0.02em | -0.01em | 0       |
+| h1      | -0.02em | -0.01em | 0       |
+| h2      | -0.01em | 0       | +0.01em |
+| h3      | -0.01em | 0       | +0.01em |
+| body    | 0       | 0       | +0.01em |
+| button  | 0       | 0       | +0.02em |
+| label   | 0       | +0.01em | +0.02em |
+| caption | 0       | +0.01em | +0.02em |
+
+**CJK guard — not optional.** Note that negative tracking appears only at h3 and above,
+never at body/caption/label/button. Chinese glyphs fill the full em square and have no
+side bearing to borrow from, so negative tracking on CJK running text pushes strokes into
+each other and reads as a rendering fault rather than as refinement. Additionally, if the
+product's primary language is CJK (the PM's product name/description is in Chinese, or
+they said so in intake), clamp display/h1/h2/h3 to `max(value, -0.01em)` and log the clamp
+in `validation_log`.
+
+Write both into the manifest as `typography.weight` and `typography.letter_spacing_em`
+(Step 7). Units: `em` is stored because it is size-relative and therefore survives any
+later scale change; the CSS adapters consume it as-is, and the React Native adapter
+converts to points (RN has no `em`) — see `adapters/react-native.md`.
+
 ## Step 5 — Resolve platform + component structure
 
 - Pull the canonical component list/variants/states from `modules/component-structure.md`
@@ -131,7 +176,11 @@ Write to `.design/design-manifest.json` in the PM's project. Structure:
     "effective_ratio": "platform-resolved ratio from Step 4b",
     "scale_px": { "caption": 0, "body": 0, "h3": 0, "h2": 0, "h1": 0, "display": 0,
                   "numeric_current_price_inline": 0, "numeric_current_price_detail": 0, "numeric_market_data": 0 },
-    "weight": { "...": "from preset" }
+    "weight": { "display": 0, "h1": 0, "h2": 0, "h3": 0,
+                 "body": 0, "caption": 0, "button": 0, "label": 0 },
+    "letter_spacing_bias": "preset value (kept for reference)",
+    "letter_spacing_em": { "display": 0, "h1": 0, "h2": 0, "h3": 0,
+                           "body": 0, "caption": 0, "button": 0, "label": 0 }
   },
   "spacing": { "...": "resolved scale" },
   "radius": { "...": "resolved values" },
@@ -157,6 +206,9 @@ message:
    - color mentions → re-run Step 2 only, keep everything else
    - "圓角/radius/更圓/更方" → bump/reduce the relevant `radius.scale_px` step(s)
    - "太擠/太鬆/density" → re-run Step 4 only
+   - "字太細/太粗/標題不夠重" → adjust `typography.weight` for the named levels only,
+     via Step 4c (do not swap the whole preset just to change weight)
+   - "字距太擠/太開" → re-run Step 4c's letter-spacing table only, keeping the CJK guard
    - anything ambiguous → ask ONE clarifying multiple-choice question, don't guess silently
 3. Re-run Step 6 (contrast validation) on the changed tokens only.
 4. Bump `manifest_version`, rewrite the manifest, re-run the relevant adapter to update

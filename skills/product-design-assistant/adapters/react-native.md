@@ -24,8 +24,14 @@ export const colors = {
 // fontSize values come straight from manifest.typography.scale_px (platform-resolved in
 // preset-blender.md Step 4b) — do NOT recompute from scale_ratio in the adapter.
 export const typography = {
-  display: { fontSize: {scale_px.display}, fontWeight: '{weight.display}', letterSpacing: N },
-  h1: { fontSize: {scale_px.h1}, fontWeight: '{weight.h1}' },
+  // fontWeight: RN takes a string enum — emit manifest.typography.weight as a string.
+  // letterSpacing: RN has no em, the value is in POINTS. Convert per level:
+  //   round(manifest.typography.letter_spacing_em[level] * scale_px[level], 2)
+  // Do the arithmetic when generating this file; never leave an expression in the output.
+  display: { fontSize: {scale_px.display}, fontWeight: '{weight.display}',
+             letterSpacing: {letter_spacing_em.display * scale_px.display, rounded} },
+  h1: { fontSize: {scale_px.h1}, fontWeight: '{weight.h1}',
+        letterSpacing: {letter_spacing_em.h1 * scale_px.h1, rounded} },
   // h2, h3, body, caption, button, label ...
   // numericCurrentPrice / numericPercentage / numericMarketData if finance extension active
   //   each includes fontVariant: ['tabular-nums'] — RN's equivalent of CSS tabular-nums

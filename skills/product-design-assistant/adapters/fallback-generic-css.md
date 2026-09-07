@@ -10,7 +10,13 @@ gets a usable output — never blocks on "unsupported stack."
 
 Identical structure to the CSS variables layer in `adapters/web-tailwind.md` — plain CSS
 custom properties, framework-agnostic. Any stack can consume this with minimal glue
-code.
+code. That includes the `--font-weight-*` and `--letter-spacing-*` blocks: a stack
+consuming raw tokens has no other source for them.
+
+For `tokens.json`, note that consumers without `em` support (native iOS/Android, Flutter)
+need letter-spacing in absolute units — carry the `em` value through as a string and state
+the conversion (`em × fontSize = pt`) in `component-guide.md`, rather than silently
+emitting a number whose unit is ambiguous.
 
 ### 2. `.design/tokens.json`
 
@@ -20,7 +26,7 @@ mobile, Flutter):
 ```json
 {
   "color": { "primary": { "50": "#...", "500": "#...", "900": "#..." }, "background": "#...", "...": "..." },
-  "typography": { "display": { "fontSize": 34, "fontWeight": 700 }, "...": "..." },
+  "typography": { "display": { "fontSize": 34, "fontWeight": 700, "letterSpacing": "-0.02em" }, "...": "..." },
   "spacing": [4, 8, 12, 16, 24, 32, 40, 48],
   "radius": { "button": 6, "card": 6, "...": "..." },
   "elevation": [ { "...": "..." } ]
