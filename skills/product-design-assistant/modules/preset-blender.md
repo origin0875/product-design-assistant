@@ -188,6 +188,59 @@ snap window either.
 Write into the manifest as `typography.line_height` (the resolved ratios) and
 `typography.line_height_px.body` (the snapped body line box, if snapping applied).
 
+## Step 4e — Resolve font family
+
+The preset names *candidate* faces; this step turns them into one stack per role, and
+decides whether a webfont is loaded at all. Two mechanics have to be right or the stack
+is decorative:
+
+**1. Script order is the mechanism, not a preference.** Put the Latin face **before** the
+CJK face in a single `font-family` list. The browser resolves per glyph, so Latin letters
+and digits take the Latin face and Chinese characters fall through to the CJK face —
+that is how one stack serves both scripts. Reversing the order silently hands Latin
+digits to the CJK face, whose figures are usually full-width and differently
+proportioned; in a finance product that also destroys column alignment against every
+other number on the page. Never emit a stack with the CJK face first.
+
+Always terminate the stack with the preset's `system_only` list plus a generic
+(`sans-serif` / `serif`). A stack with no reachable last resort renders in the browser
+default, which is the one outcome nobody chose.
+
+**2. Weight availability, per script.** The preset ladders demand 500/600/700/800, and
+CJK system faces do not all have them: PingFang TC covers Regular/Medium/Semibold, but
+Microsoft JhengHei ships only Regular and Bold. Asking for 600 there produces synthetic
+bold — smeared strokes, which on dense Chinese glyphs reads as a rendering fault. So:
+
+- When a CJK **webfont** is loaded, request the weights the preset actually uses.
+  Google Fonts delivers CJK families as many small `unicode-range` slices, so a page
+  downloads only the slices its glyphs need and multiple weights stay affordable.
+- When the build is **system-only** (no webfont — offline, an internal network that
+  blocks the CDN, or the PM asked for no external dependency), clamp CJK to the weights
+  those faces actually have: map 500 and 600 down to 400, and 800 to 700. Latin keeps
+  the full ladder. Log the clamp in `validation_log` — the PM should be told the
+  hierarchy is carried by size and spacing on that build, not by weight.
+- If the project **self-hosts** the CJK face instead, note in `component-guide.md` that a
+  full Traditional Chinese font is several MB *per weight*: either subset the build to
+  the glyphs actually shipped, or carry at most two weights (400 and 700).
+
+**3. Two families is a cost decision, not a style decision.** `minimal-elegant` names a
+serif for display. Loading a second *CJK* family for headings only is rarely worth it:
+apply `cjk_display` only when the project self-hosts and subsets it to the display strings
+actually used. Otherwise emit the serif for Latin display and let CJK display stay on the
+sans — an editorial serif on Latin headings over a clean CJK sans is a legitimate pairing,
+and it is the one that ships.
+
+**4. Tabular figures.** If the finance extension is active, the resolved Latin face must
+have real tabular figures (the preset's `tabular_required`). Verify the chosen face
+supports `font-variant-numeric: tabular-nums`; if the build is system-only, note that
+`-apple-system` does support it but not every Windows fallback does, and that price and
+volume columns must therefore also be right-aligned with a fixed column width rather than
+relying on the font alone.
+
+Write into the manifest as `typography.font_family.{body,display,mono?}` (each a complete
+ordered stack string), `typography.font_source` (`"google" | "self-hosted" | "system"`),
+and `typography.webfont_weights` (what the adapter should actually request).
+
 ## Step 5 — Resolve platform + component structure
 
 - Pull the canonical component list/variants/states from `modules/component-structure.md`
@@ -231,7 +284,10 @@ Write to `.design/design-manifest.json` in the PM's project. Structure:
     "line_height_bias": "preset value (kept for reference)",
     "line_height": { "display": 0, "h1": 0, "h2": 0, "h3": 0,
                      "body": 0, "caption": 0, "button": 0, "label": 0 },
-    "line_height_px": { "body": 0 }
+    "line_height_px": { "body": 0 },
+    "font_family": { "body": "ordered stack string", "display": "ordered stack string" },
+    "font_source": "google | self-hosted | system",
+    "webfont_weights": { "latin": [400, 500, 600, 700], "cjk": [400, 700] }
   },
   "spacing": { "...": "resolved scale" },
   "radius": { "...": "resolved values" },
@@ -260,6 +316,8 @@ message:
    - "字太細/太粗/標題不夠重" → adjust `typography.weight` for the named levels only,
      via Step 4c (do not swap the whole preset just to change weight)
    - "字距太擠/太開" → re-run Step 4c's letter-spacing table only, keeping the CJK guard
+   - "字體換成 X / 不要外部字型 / 公司內網載不到" → re-run Step 4e only, and re-check
+     the weight clamp: dropping to a system-only build changes which weights survive
    - "行距太擠/太鬆/一整片字看不下去" → re-run Step 4d only. Note this is NOT the same
      request as "太擠/太鬆" about density (Step 4), which moves spacing between elements;
      if the PM's wording doesn't separate the two, ask one multiple-choice question

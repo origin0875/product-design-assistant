@@ -43,6 +43,14 @@ typography:
     label: 500
   letter_spacing_bias: wide
   line_height_bias: airy          # 留白是主張，行距是留白最大的一塊
+  font_family:
+    character: "低對比、細筆畫；display 用襯線做編輯感，內文維持無襯線的易讀性"
+    latin: ["Source Serif 4"]           # display / h1 only
+    latin_body: ["Manrope", "Source Sans 3"]
+    cjk: ["Noto Sans TC"]
+    cjk_display: ["Noto Serif TC"]      # 見 blender Step 4e 的雙字族成本規則
+    system_only: ['-apple-system', "PingFang TC", "Microsoft JhengHei"]
+    tabular_required: false
   numeric_typography: optional
 
 spacing:

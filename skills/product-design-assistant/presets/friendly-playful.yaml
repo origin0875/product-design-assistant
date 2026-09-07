@@ -43,6 +43,15 @@ typography:
     label: 500
   letter_spacing_bias: normal
   line_height_bias: relaxed       # 呼應 density: spacious，讀起來不壓迫
+  font_family:
+    character: "humanist，字腔開，字碗圓，呼應 radius.button: full 的圓潤"
+    latin: ["Rubik", "Nunito Sans"]
+    cjk: ["Noto Sans TC"]
+    system_only: ['-apple-system', "PingFang TC", "Microsoft JhengHei"]
+    tabular_required: false
+    note: |
+      中文沒有可直接從 Google Fonts 取用的圓體。真的需要圓體時是自架
+      jf-openhuninn（開源），不要為了圓潤去對 Noto Sans TC 加 synthetic 效果。
   numeric_typography: optional
 
 spacing:

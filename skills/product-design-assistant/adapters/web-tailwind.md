@@ -56,6 +56,12 @@ layer underneath Tailwind:
   --line-height-body: {manifest.typography.line_height_px.body}px;  /* or the ratio if unsnapped */
   /* ... h1, h2, h3, caption, button, label — each straight from line_height */
 
+  /* Family — from manifest.typography.font_family (Step 4e). Emit the stack verbatim,
+     Latin face first: the browser resolves per glyph, so Latin and digits take the Latin
+     face and Chinese falls through to the CJK face. Do not reorder. */
+  --font-family-body: {manifest.typography.font_family.body};
+  --font-family-display: {manifest.typography.font_family.display};
+
   /* Spacing */
   --space-1: {scale[0]}px; --space-2: {scale[1]}px; /* ... through scale[7] */
 
@@ -72,6 +78,25 @@ layer underneath Tailwind:
   --shadow-3: 0 12px 24px rgba(0,0,0,{opacity_range[1]});
 }
 ```
+
+### 1b. The webfont link (only when `manifest.typography.font_source == "google"`)
+
+Add to the app's document head, requesting exactly `manifest.typography.webfont_weights`
+— not a blanket 100..900, which on a CJK family is a large amount of weight the page
+never uses:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family={latin}:wght@{latin_weights}&family={cjk}:wght@{cjk_weights}&display=swap">
+```
+
+`display=swap` is not optional: a CJK family is fetched as many `unicode-range` slices, and
+without it the page renders invisible text until they land.
+
+If `font_source` is `"system"`, write no link at all and say so in the component guide —
+a stack that names a face the project never loads is the most common way a design system
+looks correct in the manifest and wrong in the browser.
 
 ### 2. `tailwind.config.js` (extend, never replace)
 
@@ -111,6 +136,12 @@ theme: {
       display: 'var(--line-height-display)',
       body: 'var(--line-height-body)',
       // ... h1, h2, h3, caption, button, label
+    },
+    fontFamily: {
+      // Tailwind wants arrays; split the resolved stack on commas rather than
+      // re-authoring it, so the Latin-first order from Step 4e survives.
+      body: ['var(--font-family-body)'],
+      display: ['var(--font-family-display)'],
     },
     spacing: { /* map scale to Tailwind's spacing keys */ },
     borderRadius: {

@@ -27,6 +27,7 @@ mobile, Flutter):
 {
   "color": { "primary": { "50": "#...", "500": "#...", "900": "#..." }, "background": "#...", "...": "..." },
   "typography": { "display": { "fontSize": 34, "fontWeight": 700, "letterSpacing": "-0.02em", "lineHeight": 1.15 }, "...": "..." },
+  "fontFamily": { "body": "ordered stack string, Latin face first", "display": "..." },
   "spacing": [4, 8, 12, 16, 24, 32, 40, 48],
   "radius": { "button": 6, "card": 6, "...": "..." },
   "elevation": [ { "...": "..." } ]

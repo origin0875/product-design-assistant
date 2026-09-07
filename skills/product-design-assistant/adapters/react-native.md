@@ -42,6 +42,23 @@ export const typography = {
   //   each includes fontVariant: ['tabular-nums'] — RN's equivalent of CSS tabular-nums
 } as const;
 
+// Family — RN cannot load a font from a URL. The font files must be linked into the
+// native projects (react-native.config.js + `npx react-native-asset`, or manually via
+// Info.plist / android/app/src/main/assets/fonts). Emit the names here AND state the
+// linking step in component-guide.md; a fontFamily naming an unlinked font fails
+// silently on iOS and crashes some Android builds.
+//
+// Android does NOT combine fontFamily with fontWeight: it needs the weight-specific
+// PostScript name. So emit one entry per weight the manifest actually uses, and have
+// components reference these instead of setting fontWeight on a custom family.
+export const fonts = {
+  regular: '{latin_face}-Regular', medium: '{latin_face}-Medium',
+  semibold: '{latin_face}-SemiBold', bold: '{latin_face}-Bold',
+} as const;
+// CJK glyphs fall through to the OS face (PingFang TC / Noto Sans CJK) unless the CJK
+// font is also linked — on RN there is no per-glyph fallback chain like CSS gives you,
+// so a mixed-script string renders in whatever the single named family covers.
+
 export const spacing = { 1: N, 2: N, 3: N, 4: N, 5: N, 6: N, 7: N, 8: N } as const; // from manifest.spacing.scale
 
 export const radius = {

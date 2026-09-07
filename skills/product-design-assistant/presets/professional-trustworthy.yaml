@@ -45,6 +45,12 @@ typography:
     label: 500
   letter_spacing_bias: tight
   line_height_bias: normal        # 掃描效率優先，不刻意拉開
+  font_family:
+    character: "中性 grotesque，工程感，數字要有明確的 tabular 表現"
+    latin: ["IBM Plex Sans", "Source Sans 3"]
+    cjk: ["Noto Sans TC"]
+    system_only: ['-apple-system', "PingFang TC", "Microsoft JhengHei"]
+    tabular_required: true        # finance extension 觸發時必須成立
   numeric_typography: optional   # becomes "required" if finance extension triggers
 
 spacing:
