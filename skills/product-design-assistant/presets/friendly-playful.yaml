@@ -42,6 +42,7 @@ typography:
     button: 700
     label: 500
   letter_spacing_bias: normal
+  line_height_bias: relaxed       # 呼應 density: spacious，讀起來不壓迫
   numeric_typography: optional
 
 spacing:

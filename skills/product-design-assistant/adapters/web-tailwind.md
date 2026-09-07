@@ -48,6 +48,14 @@ layer underneath Tailwind:
   --letter-spacing-h1: {manifest.typography.letter_spacing_em.h1}em;
   /* ... h2, h3, body, caption, button, label — each straight from letter_spacing_em */
 
+  /* Line-height — from manifest.typography.line_height (Step 4d). Unitless, never px:
+     a unitless ratio is inherited as a ratio, so nested text at a different size still
+     gets correct leading. The one exception is body when Step 4d snapped it to the 4px
+     grid — emit that as px so the snap actually survives. */
+  --line-height-display: {manifest.typography.line_height.display};
+  --line-height-body: {manifest.typography.line_height_px.body}px;  /* or the ratio if unsnapped */
+  /* ... h1, h2, h3, caption, button, label — each straight from line_height */
+
   /* Spacing */
   --space-1: {scale[0]}px; --space-2: {scale[1]}px; /* ... through scale[7] */
 
@@ -99,6 +107,11 @@ theme: {
       h1: 'var(--letter-spacing-h1)',
       // ... h2, h3, body, caption, button, label
     },
+    lineHeight: {
+      display: 'var(--line-height-display)',
+      body: 'var(--line-height-body)',
+      // ... h1, h2, h3, caption, button, label
+    },
     spacing: { /* map scale to Tailwind's spacing keys */ },
     borderRadius: {
       button: 'var(--radius-button)',
@@ -118,19 +131,24 @@ Human-readable (for engineers, not PM) mapping of each component in
 ```md
 ## Button — primary, md
 `inline-flex items-center justify-center px-6 py-3 rounded-button bg-primary-500
-text-white text-button font-button tracking-button disabled:opacity-40`
+text-white text-button font-button tracking-button leading-button disabled:opacity-40`
 ```
 
 One recipe per component × variant × size combination that the manifest defines.
 
-## The type trio
+## The type set — four classes, always together
 
-Every text-bearing element in the component guide must carry all three of
-`text-{level}`, `font-{level}` and `tracking-{level}` — never a size class on its own.
-A lone `text-h1` inherits whatever weight and tracking the surrounding element happened
-to set, which is exactly the drift `modules/typography-audit.md` later has to clean up.
-State this rule at the top of the generated `component-guide.md`, not just in the
-recipes, so engineers writing new screens follow it too.
+Every text-bearing element in the component guide must carry all four of
+`text-{level}`, `font-{level}`, `tracking-{level}` and `leading-{level}` — never a size
+class on its own. A lone `text-h1` inherits whatever weight, tracking and leading the
+surrounding element happened to set, which is exactly the drift
+`modules/typography-audit.md` later has to clean up. State this rule at the top of the
+generated `component-guide.md`, not just in the recipes, so engineers writing new screens
+follow it too.
+
+Buttons are the one place `leading-button` matters more than it looks: without it the
+button inherits body leading (up to 28px on a CJK build) and the control grows ~12px
+taller than the spec, which then desynchronises it from input height beside it.
 
 ## Numeric typography (if finance extension active)
 

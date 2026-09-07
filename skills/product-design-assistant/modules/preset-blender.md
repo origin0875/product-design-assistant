@@ -141,6 +141,53 @@ Write both into the manifest as `typography.weight` and `typography.letter_spaci
 later scale change; the CSS adapters consume it as-is, and the React Native adapter
 converts to points (RN has no `em`) — see `adapters/react-native.md`.
 
+## Step 4d — Resolve line-height
+
+Line-height is the single largest whitespace decision in the whole kit — a 16px body at
+1.5 versus 1.8 changes the height of every screen — so it is calibrated per preset
+(`typography.line_height_bias`), not improvised per project.
+
+**1. Base ratios by bias.** Unitless, so they survive any later scale change. The ratio
+falls as size rises: a 51px display line needs far less proportional leading than a 16px
+paragraph.
+
+| Token   | normal | relaxed | airy |
+|---------|--------|---------|------|
+| display | 1.15   | 1.15    | 1.20 |
+| h1      | 1.20   | 1.25    | 1.25 |
+| h2      | 1.25   | 1.30    | 1.30 |
+| h3      | 1.35   | 1.40    | 1.40 |
+| body    | 1.50   | 1.55    | 1.60 |
+| label   | 1.40   | 1.45    | 1.45 |
+| caption | 1.45   | 1.50    | 1.50 |
+| button  | 1.20   | 1.20    | 1.20 |
+
+`button` is fixed at 1.20 across all biases on purpose: button height comes from padding,
+not from leading, so the ratio only needs to be large enough not to clip descenders.
+Do not set it to 1.0 — that clips in several common CJK and geometric Latin faces.
+
+**2. CJK adjustment.** If the product's primary language is CJK (same signal as the Step 4c
+guard), add: **body `+0.20`**, label/caption `+0.15`, display/h1/h2/h3 `+0.05`, button `0`.
+Chinese glyphs fill the em square edge to edge and have no ascender/descender gap to act as
+visual leading, so Latin-calibrated line-height reads as a solid block of text. A
+professional-trustworthy body therefore resolves to 1.50 for Latin and 1.70 for CJK.
+
+**3. Grid snap — body only, and only when it is nearly on grid.** Compute
+`body_line_px = body_size × ratio`. If it falls within **1px** of a multiple of 4, snap it
+to that multiple and store the recomputed ratio; otherwise keep the ratio as-is. Body is
+the level every other rhythm stacks against, so it is worth aligning — but only when the
+correction is imperceptible. Beyond 1px, the preset's intent outranks the grid, because
+snapping a 25.6px line box down to 24px would erase the exact difference between `airy`
+and `normal` that the PM chose the preset for.
+
+Note the one place this collapses: professional CJK (27.2px) and minimal-elegant CJK
+(28.8px) both snap to 28px. That is a sub-pixel-per-line difference at that point and not
+worth protecting — say nothing to the PM about it, but do not "fix" it by widening the
+snap window either.
+
+Write into the manifest as `typography.line_height` (the resolved ratios) and
+`typography.line_height_px.body` (the snapped body line box, if snapping applied).
+
 ## Step 5 — Resolve platform + component structure
 
 - Pull the canonical component list/variants/states from `modules/component-structure.md`
@@ -180,7 +227,11 @@ Write to `.design/design-manifest.json` in the PM's project. Structure:
                  "body": 0, "caption": 0, "button": 0, "label": 0 },
     "letter_spacing_bias": "preset value (kept for reference)",
     "letter_spacing_em": { "display": 0, "h1": 0, "h2": 0, "h3": 0,
-                           "body": 0, "caption": 0, "button": 0, "label": 0 }
+                           "body": 0, "caption": 0, "button": 0, "label": 0 },
+    "line_height_bias": "preset value (kept for reference)",
+    "line_height": { "display": 0, "h1": 0, "h2": 0, "h3": 0,
+                     "body": 0, "caption": 0, "button": 0, "label": 0 },
+    "line_height_px": { "body": 0 }
   },
   "spacing": { "...": "resolved scale" },
   "radius": { "...": "resolved values" },
@@ -209,6 +260,9 @@ message:
    - "字太細/太粗/標題不夠重" → adjust `typography.weight` for the named levels only,
      via Step 4c (do not swap the whole preset just to change weight)
    - "字距太擠/太開" → re-run Step 4c's letter-spacing table only, keeping the CJK guard
+   - "行距太擠/太鬆/一整片字看不下去" → re-run Step 4d only. Note this is NOT the same
+     request as "太擠/太鬆" about density (Step 4), which moves spacing between elements;
+     if the PM's wording doesn't separate the two, ask one multiple-choice question
    - anything ambiguous → ask ONE clarifying multiple-choice question, don't guess silently
 3. Re-run Step 6 (contrast validation) on the changed tokens only.
 4. Bump `manifest_version`, rewrite the manifest, re-run the relevant adapter to update

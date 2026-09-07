@@ -42,6 +42,7 @@ typography:
     button: 500
     label: 500
   letter_spacing_bias: wide
+  line_height_bias: airy          # 留白是主張，行距是留白最大的一塊
   numeric_typography: optional
 
 spacing:

@@ -28,10 +28,15 @@ export const typography = {
   // letterSpacing: RN has no em, the value is in POINTS. Convert per level:
   //   round(manifest.typography.letter_spacing_em[level] * scale_px[level], 2)
   // Do the arithmetic when generating this file; never leave an expression in the output.
+  // lineHeight: RN takes POINTS, not a ratio — round(line_height[level] * scale_px[level]).
+  // Unlike CSS there is no unitless form, so every level must be computed here; omitting
+  // it makes RN fall back to the font's own metrics, which differ per platform.
   display: { fontSize: {scale_px.display}, fontWeight: '{weight.display}',
-             letterSpacing: {letter_spacing_em.display * scale_px.display, rounded} },
+             letterSpacing: {letter_spacing_em.display * scale_px.display, rounded},
+             lineHeight: {round(line_height.display * scale_px.display)} },
   h1: { fontSize: {scale_px.h1}, fontWeight: '{weight.h1}',
-        letterSpacing: {letter_spacing_em.h1 * scale_px.h1, rounded} },
+        letterSpacing: {letter_spacing_em.h1 * scale_px.h1, rounded},
+        lineHeight: {round(line_height.h1 * scale_px.h1)} },
   // h2, h3, body, caption, button, label ...
   // numericCurrentPrice / numericPercentage / numericMarketData if finance extension active
   //   each includes fontVariant: ['tabular-nums'] — RN's equivalent of CSS tabular-nums
