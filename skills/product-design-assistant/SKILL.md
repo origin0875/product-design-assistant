@@ -35,10 +35,19 @@ mismatch needs the audit to close.
 
 ### 0. Determine intent
 
-- No `.design/design-manifest.json` in the project yet → **Build flow** (below)
+- No manifest yet, but the project **already has screens** and the PM's complaint is about
+  type — "字級大小不知道怎麼調" / "字看起來很亂" / "想把字級變正常" → **Typography-first
+  flow**: run `modules/typography-audit.md` starting at its Step 0, which derives a scale
+  from what they already have. Do **not** push them through the seven-question build first.
+  A PM arriving with a working site wants their site fixed, and the build flow does not
+  touch existing screens — running it first produces a kit they did not ask for and leaves
+  the original complaint untouched.
+- No `.design/design-manifest.json` in the project yet, and the project is new/empty →
+  **Build flow** (below)
 - Manifest exists, PM is asking for a change → **Iteration flow** (below)
-- Manifest exists, PM complains that font sizes still look wrong / inconsistent, or asks to
-  check which text isn't following the kit → **Typography audit** (`modules/typography-audit.md`)
+- Manifest exists, PM complains that font sizes or weights still look wrong / inconsistent,
+  or asks to check which text isn't following the kit → **Typography audit**
+  (`modules/typography-audit.md`, from Step 1)
 - PM asks for the full Screen Generator or full Design Review (color/spacing/components) →
   tell them this is still on the roadmap (the typography audit is the one built slice), and stop
 
