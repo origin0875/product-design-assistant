@@ -13,6 +13,11 @@ screens consistent. This skill handles all of that behind the scenes. The PM nev
 or needs to understand terms like Design Token, Semantic Token, Foundation, Variables, or
 8pt Grid.
 
+## 使用說明
+
+**[USAGE.md](USAGE.md)** — 給 PM 的完整使用說明（繁體中文）：兩條路線的流程圖與逐步說明、
+七題各自決定什麼、產出的檔案、怎麼用白話調整、給前端的三條規則、以及做不到的事。
+
 ## What it does (Phase 1 — current)
 
 1. Detects the PM's project (Web+Tailwind, React Native, or falls back to generic CSS
@@ -30,6 +35,14 @@ or needs to understand terms like Design Token, Semantic Token, Foundation, Vari
 6. Takes follow-up tweaks in plain language ("品牌色改藍色", "按鈕圓角改大一點") and
    updates the whole system consistently from a single source of truth
    (`.design/design-manifest.json`).
+
+There is a **second entry point** that skips all of the above. A PM who already has a
+working site and just wants the type fixed ("字級大小不知道怎麼調") goes straight to
+`modules/typography-audit.md`, which derives a scale from the sizes and weights the site
+already uses — weighted by how often each one appears — and offers to snap the outliers
+back. The build flow never touches existing screens, so running it first on such a project
+produces a kit the PM did not ask for and leaves the original complaint untouched. See
+[USAGE.md](USAGE.md) §1.
 
 ## Roadmap (not yet implemented)
 
