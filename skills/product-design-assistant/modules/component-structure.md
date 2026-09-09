@@ -72,6 +72,20 @@ are the ones that get shipped at 14px.
 - **Props**: label (always visible, never placeholder-only), helper text, error text, leading/trailing icon
 - **Radius token**: `radius.input`
 
+## Text Size Control
+
+- **Variants**: `segmented` (three labelled options side by side — the default) or `list`
+  (a settings row per option, for a dense settings screen)
+- **Options**: 小 / 中 / 大, exactly three, always labelled with words rather than only
+  glyph sizes — an A-A-A control tells a user nothing about which one they are on
+- **States per option**: `selected`, `unselected`
+- **Placement**: wherever the product keeps display settings; never buried more than two
+  taps deep
+- **Behaviour**: applies immediately and persists per user. Do not require a restart, and
+  do not scope it to one screen.
+- **Usage rule**: the control must render its own preview text at the size being offered,
+  so the choice is visible before it is made
+
 ## Card
 
 - **Variants**: `default` (surface + border/shadow per preset), `interactive` (adds pressed state, used when card is tappable), `outlined` (no elevation, border only)

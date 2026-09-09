@@ -180,6 +180,34 @@ text-white text-button font-button tracking-button leading-button disabled:opaci
 
 One recipe per component × variant × size combination that the manifest defines.
 
+## The 小 / 中 / 大 text size setting
+
+Emit 中 as the bare `:root` values — the default must work with no attribute set, no class
+applied and no JavaScript run. Then override only the type variables under a root
+attribute, the same three-state shape the theme uses:
+
+```css
+:root { /* 中 — the default, already emitted above */ }
+:root[data-text-size="small"] {
+  --font-size-display: 29px; --font-size-h1: 24px; /* ... every level ... */
+  --line-height-body: 24px;   /* re-snapped per step, see Step 4f */
+}
+:root[data-text-size="large"] {
+  --font-size-display: 37px; --font-size-h1: 31px; /* ... */
+  --line-height-body: 30.6px; /* this one does not land on the grid — that is correct */
+}
+```
+
+Only the type variables are redeclared. Spacing, radius and control heights are absent
+from these blocks on purpose; if you find yourself adding them, the change belongs to
+density (Step 4), not to text size.
+
+The page reads the stored choice **before first paint** — set the attribute from a tiny
+inline script in `<head>`, not from app code after hydration, or every reader who chose 大
+gets a flash of 中 on every navigation. Persist per user, and state in
+`component-guide.md` that this control is layered on top of the OS text-size setting on
+native, not a replacement for it.
+
 ## Using the color roles
 
 The component guide must show the role, not just the color. A recipe that says
