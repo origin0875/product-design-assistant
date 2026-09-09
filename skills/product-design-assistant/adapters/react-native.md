@@ -95,6 +95,26 @@ StyleSheet: paddingHorizontal: spacing[6], paddingVertical: spacing[3],
 borderRadius: radius.button, backgroundColor: colors.primary[500]
 ```
 
+## The 小 / 中 / 大 text size setting
+
+Export all three resolved tables and select between them at runtime — RN has no cascade,
+so the step has to be a value components read, not an attribute they inherit:
+
+```ts
+export const typographySteps = { small: {...}, medium: {...}, large: {...} } as const;
+export type TextSizeStep = keyof typeof typographySteps;
+```
+
+Put the current step in the same provider that already carries the theme, read it with
+`useTheme()`, and persist it (AsyncStorage or the app's own settings store). Load the
+stored value before the first render that shows text.
+
+This control is **layered on top of** the OS setting, not a replacement for it: RN's
+`allowFontScaling` still applies the user's system text size on top of whatever step is
+selected. Do not set `allowFontScaling={false}` to make the in-app control the only
+authority — that is how a product silently opts out of the accessibility setting its users
+already configured. If the combination overflows a layout, fix the layout.
+
 ## Control height and hit target
 
 Emit `control_height` and `min_hit_target` from the manifest into `tokens.ts`, and set an

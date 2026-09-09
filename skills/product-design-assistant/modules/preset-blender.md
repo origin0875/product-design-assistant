@@ -294,6 +294,67 @@ Write into the manifest as `typography.font_family.{body,display,mono?}` (each a
 ordered stack string), `typography.font_source` (`"google" | "self-hosted" | "system"`),
 and `typography.webfont_weights` (what the adapter should actually request).
 
+## Step 4f — Resolve the three user-selectable text sizes
+
+Every kit ships a 小 / 中 / 大 text-size setting by default. It is not an add-on the PM
+opts into: a product whose text cannot be enlarged is one a whole class of users cannot
+read, and retrofitting the control later means auditing every screen that hardcoded a
+resolved value in the meantime.
+
+**1. Three steps, one ratio.** Do not invent per-level multipliers. Take the resolved
+`base` from Step 4b and scale it, then re-derive every level through the *same*
+`effective_ratio`, so the hierarchy the PM chose survives at all three settings:
+
+| 段 | base 倍率 | base (from 16) |
+|----|-----------|----------------|
+| 小 | ×0.875 | 14 |
+| 中 | ×1.000 | 16 — the default |
+| 大 | ×1.125 | 18 |
+
+For the finance/web example (ratio 1.200) that resolves to:
+
+| | 小 | 中 | 大 |
+|---|---|---|---|
+| display | 29 | 33 | 37 |
+| h1 | 24 | 28 | 31 |
+| h2 | 20 | 23 | 26 |
+| h3 | 17 | 19 | 22 |
+| body / button | 14 | 16 | 18 |
+| label / caption | 12 | 13 | 15 |
+| 報價大字 (`^5`) | 35 | 40 | 45 |
+
+±12.5% is deliberate. A smaller step is not worth a setting — a user who reaches for it
+wants a difference they can see, and ±1px on body is not one. A larger step starts
+breaking layouts that were composed at 中, which turns an accessibility feature into a
+bug report.
+
+**2. Floors and caps apply per step, not once.**
+
+- `caption` and `label` never resolve below **12px**. Below that CJK glyphs lose stroke
+  separation at normal viewing distance. If 小 would go under, clamp and log it.
+- The mobile `display` cap (40) and numeric cap (52) from Step 4b are re-checked at 大.
+- Re-run Step 4d's grid snap **per step**. It will snap at some steps and not others — 小
+  lands on 23.8px and snaps to 24; 中 lands on 27.2 and snaps to 28; 大 lands on 30.6,
+  which is 1.4px from the nearest gridline, so it keeps 30.6. That inconsistency is the
+  rule working, not a defect to smooth over.
+
+**3. What does *not* scale.** Only type and its leading. Spacing, radius, elevation and
+control heights stay fixed — spacing is a separate axis (information density, Step 4), and
+scaling everything together is page zoom, which the browser already does better. The one
+exception is a control that can no longer contain its own label at 大: raise that control's
+height for that step alone, and log it. Verify this rather than assuming — at the default
+heights (32/40/48) an 18px label at leading 1.20 needs 38px including padding, so `md`
+holds at all three steps.
+
+**4. Native is layered, not replaced.** On iOS and Android this control sits **on top of**
+the OS text-size setting; it does not implement or substitute for Dynamic Type. Say so
+plainly in `component-guide.md` — a team that believes the in-app control covers
+accessibility will skip the OS integration entirely.
+
+Write into the manifest as `typography.scale_steps.{small,medium,large}`, each a full
+resolved table (sizes, line heights, and any per-step control-height override), plus
+`typography.default_step: "medium"`.
+
 ## Step 5 — Resolve platform + component structure
 
 - Pull the canonical component list/variants/states from `modules/component-structure.md`
