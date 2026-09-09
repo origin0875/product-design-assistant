@@ -33,6 +33,18 @@ Ask in two batches so the PM isn't hit with everything at once.
      input, so keep it phrased in terms of how the PM's users read the screen — do not
      narrow it into a whitespace-only question.
 
+**Batch 2b — asked ONLY if the finance extension activated (see `preset-blender.md` Step 3)**
+
+8. 股價上漲的時候要用什麼顏色? Options:
+   - "紅色上漲、綠色下跌（台股慣例）" → `east-asian`
+   - "綠色上漲、紅色下跌（歐美慣例）" → `western`
+   - Pre-select the one matching the product's primary language (Chinese/Japanese/Korean →
+     east-asian; otherwise western), and say which one is pre-selected and why, in one line.
+   - This is the only conditional question in the intake, and it exists because guessing it
+     wrong is invisible: nothing breaks, the product just tells every user the opposite of
+     what happened. Never skip it for a finance product, and never infer it from the
+     exchange being displayed — it follows the user's market habit, not the listing venue.
+
 ## Output of this module
 
 A structured `intake_answers` object, e.g.:
@@ -45,7 +57,8 @@ A structured `intake_answers` object, e.g.:
   "primary_users": "...",
   "tone_choice": "professional-trustworthy",
   "brand_color": { "provided": true, "value_or_description": "深藍色" },
-  "density_override": "dense"
+  "density_override": "dense",
+  "market_convention": "east-asian"
 }
 ```
 

@@ -39,6 +39,55 @@ matches any of the extension's `trigger_keywords`. If matched:
 
 Extensions are additive only — they never remove or override base tokens.
 
+## Step 3b — Resolve the market convention (finance only)
+
+Runs only when the finance extension activated in Step 3. Skip it entirely otherwise —
+this must not lengthen intake for the other six product types.
+
+**Which hue means "up" is not universal, and getting it backwards is silent.** Nothing
+errors, nothing looks broken; the product simply tells every user the opposite of what
+happened. Western markets read green as a rise; Taiwan, China, Japan and Korea read red as
+a rise. The presets therefore name the two blocks `hue_green` and `hue_red` — by hue, not
+by direction — and this step points them at `up` and `down`.
+
+**1. Default from language, then confirm — do not guess silently.** If the product's
+primary language is Chinese, Japanese or Korean, default to `east-asian`; otherwise
+`western`. Then ask the PM one multiple-choice question with that default pre-selected
+(see `intake.md` Q8). This is the one place where a wrong silent guess is worse than an
+extra question, and it is asked only for finance products.
+
+Note the driver is the **user's market convention, not the listed exchange**: a
+Taiwanese app showing US stocks still shows its Taiwanese users 紅漲.
+
+**2. Map the families.**
+
+| `market_convention` | `up` ← | `down` ← |
+|---|---|---|
+| `western` | `hue_green` | `hue_red` |
+| `east-asian` | `hue_red` | `hue_green` |
+
+Both families already carry the five validated roles, so the swap needs no re-validation —
+it changes which direction points at which hue, not the hues themselves.
+
+**3. Fix the risk-color collision.** Under `east-asian`, red now means "up", which is
+good news, so `risk_high` in red contradicts itself on the same screen. Use the preset's
+`risk_high_alt` (a burnt orange) instead, and log the substitution. Risk badges must
+always carry their word (低/中/高) as well, so the color is reinforcement rather than the
+message.
+
+**4. Require a non-color indicator — this one is not optional.** Under
+[WCAG SC 1.4.1 Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html),
+**Level A**, color may not be the only visual means of conveying information. Direction of
+price movement conveyed by red-versus-green alone fails it, under *either* convention — and
+red/green is the pair the most common color-vision deficiencies cannot separate, so this is
+not a paperwork concern.
+
+Every value that carries a direction must also carry a sign or a glyph: `+15.0` / `-10.0`,
+`▲ 1.40%` / `▼ 0.70%`, or an arrow in the cell. Write this into the manifest as
+`components.direction_indicator: "sign" | "triangle" | "arrow"` so the adapters and the
+component guide can enforce it rather than leaving it to each engineer. A bare `1.40%` in
+red is a defect regardless of which convention is active.
+
 ## Step 4 — Apply density override
 
 If `intake_answers.density_override` differs from `preset.component_bias.density`,

@@ -72,6 +72,25 @@ are the ones that get shipped at 14px.
 - **Props**: label (always visible, never placeholder-only), helper text, error text, leading/trailing icon
 - **Radius token**: `radius.input`
 
+## Directional Value (finance extension only)
+
+Any number whose meaning includes a direction — price change, percentage change, P&L,
+net flow — is a single component, not a coloured `<span>`.
+
+- **Props**: value, direction (`up` / `down` / `flat`), and the indicator style resolved in
+  `preset-blender.md` Step 3b
+- **Required**: the indicator (a `+`/`-` sign, ▲/▼, or an arrow) renders **always**, not
+  only when color is unavailable. Color is reinforcement; the glyph is the message.
+  This is WCAG SC 1.4.1, Level A — and red/green is precisely the pair the most common
+  color-vision deficiencies cannot tell apart, so the rule earns its place here on merit,
+  not only on compliance.
+- **Flat**: a zero change takes the neutral color and no directional glyph — never the
+  "up" treatment with a `+0.00`
+- **Screen readers**: the accessible name says the direction in words ("上漲 1.40%"), since
+  ▲ alone announces as a shape or not at all
+- **Usage rule**: never place a directional value inside a cell whose background already
+  carries the same hue for another meaning (a red "up" figure on a red risk badge)
+
 ## Text Size Control
 
 - **Variants**: `segmented` (three labelled options side by side — the default) or `list`
