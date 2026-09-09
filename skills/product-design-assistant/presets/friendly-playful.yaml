@@ -118,14 +118,20 @@ layout:
 extensions:
   finance:
     trigger_keywords: ["股票", "金融", "投資", "交易", "market", "stock", "trading", "finance"]
+    # 方向不寫死。color 底下兩個是「色族」不是「方向」，由 market_convention 決定誰是漲：
+    #   western     漲=綠 跌=紅
+    #   east-asian  漲=紅 跌=綠（台灣、中國、日本、韓國等市場）
+    # 預設值與確認方式見 preset-blender.md Step 3b。兩個色族的五個角色都各自驗過對比，
+    # 所以對調不需要重驗，只是換一個指向。
+    market_convention: western
     color:
-      up:
+      hue_green:
         fill:    "#2FAE66"          # 品牌校準值，永不因對比而改
         graphic: "#2EA963"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
         tint:    "#E7F8EF"          # 徽章/chip 底色
         text:    "#227F4B"          # 對 tint ≥4.5:1（故對 surface 亦達標）
         action:  { bg: "#2FAE66", fg: "#2A241F" }
-      down:
+      hue_red:
         fill:    "#E5484D"          # 品牌校準值，永不因對比而改
         graphic: "#E5484D"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
         tint:    "#F8E7E8"          # 徽章/chip 底色
@@ -133,6 +139,8 @@ extensions:
         action:  { bg: "#E12F35", fg: "#FFFFFF" }
       chart_line: "#FF603D"   # 圖表線是「理解內容所必需」的圖形物件，適用 SC 1.4.11 ≥3:1
       chart_grid: "neutral-200"
+      # 注意：east-asian 慣例下紅色代表「漲」，risk_high 再用紅會互相牴觸。
+      # 該情況改用下方 risk_high_alt（燒橘），見 Step 3b。
       risk_high:
         fill:    "#E5484D"          # 品牌校準值，永不因對比而改
         graphic: "#E5484D"          # 圖示/圖表線/邊框 — SC 1.4.11 ≥3:1
@@ -151,5 +159,12 @@ extensions:
         tint:    "#E7F8EF"          # 徽章/chip 底色
         text:    "#227F4B"          # 對 tint ≥4.5:1（故對 surface 亦達標）
         action:  { bg: "#2FAE66", fg: "#2A241F" }
+      # east-asian 慣例下 risk_high 改用這個（紅色已被「漲」佔走）。燒橘與紅、琥珀都分得開。
+      risk_high_alt:
+        fill:    "#9A3412"
+        graphic: "#9A3412"
+        tint:    "#F8EBE7"
+        text:    "#9A3412"
+        action:  { bg: "#9A3412", fg: "#FFFFFF" }
     typography:
       numeric_typography: required

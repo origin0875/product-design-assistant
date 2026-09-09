@@ -33,7 +33,11 @@ layer underneath Tailwind:
   --color-error-action-bg: {manifest.color.error.action.bg};
   --color-error-action-fg: {manifest.color.error.action.fg};
   /* ... success, warning, info — the same six each */
-  /* + up/down/chart_line/risk_* if finance extension active, same six each */
+  /* + up/down/chart_line/risk_* if finance extension active, same six each.
+     Emit up/down by DIRECTION, never by hue: the manifest already pointed them at the
+     right hue family in Step 3b, and an engineer reaching for --color-red-text to mean
+     "漲" is how a market-convention switch silently stops working. There is no
+     --color-red-* in the output for that reason. */
 
   /* Typography — read verbatim from manifest.typography.scale_px (already resolved in
      preset-blender.md Step 4b). Never recompute from effective_ratio here. */
@@ -219,6 +223,16 @@ common cases so an engineer never has to guess:
 錯誤徽章          bg-error-tint + text-error-text
 錯誤圖示/邊框     text-error-graphic / border-error-graphic
 破壞性按鈕        bg-error-action-bg + text-error-action-fg
+漲跌數值          text-up-text / text-down-text  ＋ 一定要有 + − 或 ▲▼
+```
+
+If the finance extension is active, the guide must show the directional value as a
+component with its indicator baked in, never as a bare coloured number:
+
+```md
+## 漲跌數值 — 上漲
+`<span class="num text-up-text">▲ 1.40%</span>`  ← ▲ 一律渲染，不是色彩不可用時的替代
+                                                    （WCAG SC 1.4.1, Level A）
 ```
 
 `*-fill` appears in none of these on purpose: it is for decorative area fills only, and it

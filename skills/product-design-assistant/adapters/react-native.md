@@ -18,7 +18,9 @@ export const colors = {
   divider: '{manifest.color.divider}',
   text: { primary: '{...}', secondary: '{...}', onPrimary: '{...}' },
   success: '{...}', warning: '{...}', error: '{...}', info: '{...}',
-  // + up/down/chart/risk if finance extension active
+  // + up/down/chart/risk if finance extension active — keyed by DIRECTION, not hue.
+  // Step 3b already pointed up/down at the right hue family for the product's market;
+  // exporting colors.red would let a component hardcode the wrong direction.
 } as const;
 
 // fontSize values come straight from manifest.typography.scale_px (resolved in
